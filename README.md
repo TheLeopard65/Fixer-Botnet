@@ -5,9 +5,11 @@ FIXER Botnet is a simple botnet management system built using Python and Flask. 
 ## Installation
 
 1. Clone the repository:
-git clone https://github.com/yourusername/fixer-botnet.git
-cd fixer-botnet
-pip instlla -r requirements.txt
+```git clone https://github.com/yourusername/fixer-botnet.git```
+2. Navigate into the directory:
+```cd fixer-botnet```
+3. Install the required Modules:
+```pip instlla -r requirements.txt```
 
 ## Usage
 
@@ -29,7 +31,7 @@ pip instlla -r requirements.txt
 
 ## Credits
 
-This project was created by @TheLeopard64. 
+This project was created by @TheLeopard65. 
 
 ## License
 
