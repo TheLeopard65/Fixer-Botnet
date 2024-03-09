@@ -1,0 +1,6 @@
+pynput
+pyscreenshot
+flask
+pillow
+requests
+python-socketio
