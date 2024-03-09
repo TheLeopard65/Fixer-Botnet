@@ -1,4 +1,4 @@
-# I am not in any way responsible for any damages caused by this Repostory / Project.
+## I am not in any way responsible for any damages caused by this Project.
 
 
 # FIXER Botnet
