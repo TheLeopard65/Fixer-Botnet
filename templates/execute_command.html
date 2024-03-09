@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Execute Command</title>
+</head>
+<body>
+    <h1>Execute Command</h1>
+    <form id="commandForm">
+        <label for="botId">Bot ID:</label>
+        <input type="text" id="botId" name="botId" required><br><br>
+        <label for="command">Command:</label>
+        <input type="text" id="command" name="command" required><br><br>
+        <button type="submit">Execute</button>
+    </form>
+    <div id="output"></div>
+    <script>
+        document.getElementById('commandForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var botId = document.getElementById('botId').value;
+            var command = document.getElementById('command').value;
+            executeCommand(botId, command);
+        });
+        function executeCommand(botId, command) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/execute_command', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        document.getElementById('output').innerText = response.output;
+                    } else {
+                        document.getElementById('output').innerText = 'Error: ' + xhr.responseText;
+                    }
+                }
+            };
+            var data = JSON.stringify({ botId: botId, command: command });
+            xhr.send(data);
+        }
+    </script>
+</body>
+</html>
