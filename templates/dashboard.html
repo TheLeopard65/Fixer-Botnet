@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FIXER - Dashboard</title>
+    <style>
+        .sidebar {
+            height: 100%;
+            width: 220px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #4caf50;
+            overflow-x: hidden;
+            padding-top: 20px;
+            text-align: left;
+        }
+        .sidebar a {
+            padding: 10px;
+            text-decoration: none;
+            font-size: 22px;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar img.avatar {
+            width: 30px;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+        .sidebar img.logo {
+            align-content: center;
+            margin-left: 10px;
+            width: 200px;
+            margin-bottom: 20px;
+        }
+        .sidebar a:hover {
+            background-color: #45a049;
+        }
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+        img {
+            display: block;
+        }
+        body {
+            font-family: 'Impact', sans-serif;
+            font-weight: 300;
+            line-height: 1.42em;
+            color: #A7A1AE;
+            background-color: #1F2739;
+        }
+        #just-line-break {
+            white-space: pre-line;
+        }
+        #line-break-and-tab {
+            white-space: pre-wrap;
+        }
+        h1 {
+            font-size: 3em;
+            font-weight: 300;
+            line-height: 1em;
+            text-align: center;
+            color: #4DC3FA;
+        }
+        h2 {
+            font-size: 1em;
+            font-weight: 300;
+            text-align: center;
+            display: block;
+            line-height: 1em;
+            padding-bottom: 2em;
+            color: #FB667A;
+        }
+        h2 a {
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #FB667A;
+            text-decoration: none;
+        }
+        .blue {
+            color: #185875;
+        }
+        .yellow {
+            color: #FFF842;
+        }
+        .container th h1 {
+            font-weight: bold;
+            font-size: 1em;
+            text-align: left;
+            color: #185875;
+        }
+        .container td {
+            font-weight: normal;
+            font-size: 1em;
+            -webkit-box-shadow: 0 2px 2px -2px #0E1119;
+            -moz-box-shadow: 0 2px 2px -2px #0E1119;
+            box-shadow: 0 2px 2px -2px #0E1119;
+        }
+        .container {
+            text-align: left;
+            overflow: hidden;
+            width: 80%;
+            margin: 0 auto;
+            display: table;
+            padding: 0 0 8em 0;
+        }
+        .container td, .container th {
+            padding-bottom: 2%;
+            padding-top: 2%;
+            padding-left: 2%;
+        }
+        .container tr:nth-child(odd) {
+            background-color: #323C50;
+        }
+        .container tr:nth-child(even) {
+            background-color: #2C3446;
+        }
+        .container th {
+            background-color: #1F2739;
+        }
+        .container td:first-child {
+            color: #FB667A;
+        }
+        .container tr:hover {
+            background-color: #464A52;
+            -webkit-box-shadow: 0 6px 6px -6px #0E1119;
+            -moz-box-shadow: 0 6px 6px -6px #0E1119;
+            box-shadow: 0 6px 6px -6px #0E1119;
+        }
+        .container td:hover {
+            background-color: #FFF842;
+            color: #403E10;
+            font-weight: bold;
+            box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
+            transform: translate3d(6px, -6px, 0);
+            transition-delay: 0s;
+            transition-duration: 0.4s;
+            transition-property: all;
+            transition-timing-function: line;
+        }
+        @media (max-width: 800px) {
+            .container td:nth-child(4),
+            .container th:nth-child(4) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <img src="{{ url_for('static', filename='img/Lion.png') }}" alt="Logo" class="logo">
+    <a class="active" href="#dashboard"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+    <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+    <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+</div>
+<div class="content">
+    <table align="center" class="container">
+        <thead>
+        <tr>
+            <th><h1>Bot ID</h1></th>
+            <th><h1>HOSTNAME</h1></th>
+            <th><h1>IP ADDRESS</h1></th>
+            <th><h1>OPERATING SYSTEM</h1></th>
+            <th><h1>STATUS</h1></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for client in database %}
+            <tr>
+                <td>{{ client.idNum }}</td>
+                <td>{{ client.hostname }}</td>
+                <td>{{ client.IP }}</td>
+                <td>{{ client.OS }}</td>
+                <td>{{ client.status }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
