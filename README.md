@@ -1,3 +1,6 @@
+# I am not in any way responsible for any damages caused by this Repostory / Project.
+
+
 # FIXER Botnet
 
 FIXER Botnet is a simple botnet management system built using Python and Flask. It allows for remote command execution on client machines, as well as features such as keylogging, persistence, and taking screenshots.
