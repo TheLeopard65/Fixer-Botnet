@@ -4,6 +4,40 @@
     <meta charset="UTF-8">
     <title>FIXER - Dashboard</title>
     <style>
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .search-form label {
+            font-size: 25px;
+            font-weight: bold;
+            vertical-align: middle;
+            margin-right: 10px;
+            color: #FFF;
+        }
+        .search-form input[type="text"] {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            width: 500px;
+        }
+        .search-form button {
+            padding: 8px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-form button:hover {
+            background-color: #45a049;
+        }
         .sidebar {
             height: 100%;
             width: 220px;
@@ -38,7 +72,7 @@
             background-color: #45a049;
         }
         .content {
-            margin-left: 200px;
+            align-items: center;
             padding: 20px;
         }
         img {
@@ -80,7 +114,7 @@
             text-decoration: none;
         }
         .blue {
-            color: #185875;
+            color: #0075ab;
         }
         .yellow {
             color: #FFF842;
@@ -89,7 +123,7 @@
             font-weight: bold;
             font-size: 1em;
             text-align: left;
-            color: #185875;
+            color: #FFF842;
         }
         .container td {
             font-weight: normal;
@@ -107,8 +141,8 @@
             padding: 0 0 8em 0;
         }
         .container td, .container th {
-            padding-bottom: 2%;
-            padding-top: 2%;
+            padding-bottom: 1%;
+            padding-top: 1%;
             padding-left: 2%;
         }
         .container tr:nth-child(odd) {
@@ -125,59 +159,107 @@
         }
         .container tr:hover {
             background-color: #464A52;
-            -webkit-box-shadow: 0 6px 6px -6px #0E1119;
-            -moz-box-shadow: 0 6px 6px -6px #0E1119;
-            box-shadow: 0 6px 6px -6px #0E1119;
+            -webkit-box-shadow: 0 4px 4px -4px #0E1119;
+            -moz-box-shadow: 0 4px 4px -4px #0E1119;
+            box-shadow: 0 4px 4px -4px #0E1119;
         }
         .container td:hover {
             background-color: #FFF842;
             color: #403E10;
             font-weight: bold;
             box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
-            transform: translate3d(6px, -6px, 0);
+            transform: translate3d(4px, -4px, 0);
             transition-delay: 0s;
-            transition-duration: 0.4s;
+            transition-duration: 0.35s;
             transition-property: all;
             transition-timing-function: line;
         }
-        @media (max-width: 800px) {
-            .container td:nth-child(4),
-            .container th:nth-child(4) {
-                display: none;
-            }
+        .search-form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .search-form label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #FFF;
+        }
+        .search-form input[type="text"] {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+        .search-form button {
+            padding: 8px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-form button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
 <div class="sidebar">
     <img src="{{ url_for('static', filename='img/Lion.png') }}" alt="Logo" class="logo">
-    <a class="active" href="#dashboard"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+    <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+    <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
     <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
     <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
 </div>
 <div class="content">
-    <table align="center" class="container">
-        <thead>
-        <tr>
-            <th><h1>Bot ID</h1></th>
-            <th><h1>HOSTNAME</h1></th>
-            <th><h1>IP ADDRESS</h1></th>
-            <th><h1>OPERATING SYSTEM</h1></th>
-            <th><h1>STATUS</h1></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for client in database %}
-            <tr>
-                <td>{{ client.idNum }}</td>
-                <td>{{ client.hostname }}</td>
-                <td>{{ client.IP }}</td>
-                <td>{{ client.OS }}</td>
-                <td>{{ client.status }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="search-form">
+        <label for="botIdSearch">SEARCH BOT BY BOT-ID:</label>
+        <input type="text" id="botIdSearch" placeholder="Enter Bot ID">
+        <table align="center" class="container" id="botTable">
+            <thead>
+                <tr>
+                    <th><h1>Bot ID</h1></th>
+                    <th><h1>HOSTNAME</h1></th>
+                    <th><h1>IP ADDRESS</h1></th>
+                    <th><h1>OPERATING SYSTEM</h1></th>
+                    <th><h1>STATUS</h1></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in database %}
+                    <tr>
+                        <td>{{ client.idNum }}</td>
+                        <td>{{ client.hostname }}</td>
+                        <td>{{ client.IP }}</td>
+                        <td>{{ client.OS }}</td>
+                        <td>{{ client.status }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const botTable = document.getElementById('botTable');
+        const botIdSearch = document.getElementById('botIdSearch');
+        function filterTable() {
+            const filterValue = botIdSearch.value.toLowerCase();
+            const rows = botTable.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const cell = rows[i].getElementsByTagName('td')[0];
+                if (cell) {
+                    const cellText = cell.textContent || cell.innerText;
+                    if (cellText.toLowerCase().indexOf(filterValue) > -1) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+        botIdSearch.addEventListener('keyup', filterTable);
+    });
+</script>
 </body>
 </html>
