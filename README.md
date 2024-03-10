@@ -17,7 +17,7 @@ This repository might not work on Linux because of winreg library in the persist
 ```pip instlla -r requirements.txt```
 4. Run the Server:
 ```python3 Server.py```
-5.Run the Client:
+5. Run the Client:
 ```Python3 Client.py```
 
 ## Usage
