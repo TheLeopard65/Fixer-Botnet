@@ -9,9 +9,9 @@ def create_key(name="default", path="") -> bool:
     reg_key.Close()
     return True
 
-def tryPersistence():
+def try_persistence():
     if create_key("Task Manager for Python", str(os.path.realpath(__file__))):
-        print("Start-Up Key Added.")
+        print("Start-Up Key Added Successfully.")
         return True
     else:
         print("Failed to add startup key.")
