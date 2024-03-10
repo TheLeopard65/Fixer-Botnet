@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FIXER - Commands</title>
+    <style>
+        .sidebar {
+            height: 100%;
+            width: 220px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #4caf50;
+            overflow-x: hidden;
+            padding-top: 20px;
+            text-align: left;
+        }
+        .sidebar a {
+            padding: 10px;
+            text-decoration: none;
+            font-size: 22px;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar img.avatar {
+            width: 30px;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+        .sidebar img.logo {
+            align-content: center;
+            margin-left: 10px;
+            width: 200px;
+            margin-bottom: 20px;
+        }
+        .sidebar a:hover {
+            background-color: #45a049;
+        }
+        .content {
+            margin-left: 240px;
+            padding: 10px;
+        }
+        img {
+            display: block;
+        }
+        body {
+            font-family: 'Impact', sans-serif;
+            font-weight: 300;
+            line-height: 1.42em;
+            color: #A7A1AE;
+            background-color: #1F2739;
+        }
+        h1 {
+            font-size: 3em;
+            font-weight: 300;
+            line-height: 1em;
+            text-align: center;
+            color: #4DC3FA;
+        }
+        .sendcommands {
+            display: flex;
+            font-family: 'Impact', sans-serif;
+            font-size: 20px;
+            margin-right: 5px;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+        .sendcommands label {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .sendcommands input[type="text"] {
+            width: auto;
+            padding: 8px;
+            margin: 0 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .sendcommands button {
+            padding: 10px 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 0 5px;
+        }
+        .sendcommands button:hover {
+            background-color: #45a049;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="{{ url_for('static', filename='img/Lion.png') }}" alt="Logo" class="logo">
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
+        <a class="active" href="#commands"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+        <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+    </div>
+    <h1>COMMAND EXECUTION FORM</h1>
+    <div class="content">
+        <form id="commandForm" class="sendcommands">
+            <label for="botId">BOT ID:</label>
+            <input type="text" id="botId" name="botId" required>
+            <label for="command">COMMAND:</label>
+            <input type="text" id="command" name="command" required>
+            <button type="submit">SEND</button>
+        </form>
+        <div id="output"></div>
+    </div>
+    <script>
+        document.getElementById('commandForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var botId = document.getElementById('botId').value;
+            var command = document.getElementById('command').value;
+            var modifiedCommand = "shell " + command;
+            executeCommand(botId, modifiedCommand);
+        });
+    
+        function executeCommand(botId, command) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/execute_command', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        document.getElementById('output').innerText = response.result;
+                    } else {
+                        document.getElementById('output').innerText = 'Error: ' + xhr.responseText;
+                    }
+                }
+            };
+            var data = JSON.stringify({ botId: botId, command: command });
+            xhr.send(data);
+        }
+    </script>
+    
+</body>
+</html>
