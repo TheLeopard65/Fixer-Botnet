@@ -12,9 +12,9 @@ This repository might not work on Linux because of winreg library in the persist
 1. Clone the repository:
 ```git clone https://github.com/yourusername/fixer-botnet.git```
 2. Navigate into the directory:
-```cd fixer-botnet```
+```cd fixer-botnet/```
 3. Install the required Modules:
-```pip instlla -r requirements.txt```
+```pip instll -r requirements.txt```
 4. Run the Server:
 ```python3 Server.py```
 5. Run the Client:
