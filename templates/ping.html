@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FIXER - DDOS Ping</title>
+    <style>
+        .sidebar {
+            height: 100%;
+            width: 220px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #4caf50;
+            overflow-x: hidden;
+            padding-top: 20px;
+            text-align: left;
+            font-family: 'Impact', sans-serif;
+        }
+        .sidebar a {
+            padding: 10px;
+            text-decoration: none;
+            font-size: 22px;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar img.avatar {
+            width: 30px;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+        .sidebar img.logo {
+            align-content: center;
+            margin-left: 10px;
+            width: 200px;
+            margin-bottom: 20px;
+        }
+        .sidebar a:hover {
+            background-color: #45a049;
+        }
+        .content {
+            margin-left: 220px;
+            padding: 10px;
+            font-family: 'Impact', sans-serif;
+            color: white;
+        }
+        h1 {
+            font-size: 3em;
+            font-weight: 300;
+            line-height: 1em;
+            text-align: center;
+            color: #4DC3FA;
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        label {
+            font-weight: bold;
+            font-size: 28px;
+            vertical-align: middle;
+            margin-right: 10px;
+            color: #FFF;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            width: 700px;
+        }
+        input[type="submit"] {
+            padding: 8px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .container {
+            width: 100%;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .container th {
+            background-color: #1F2739;
+            color: #FFF842;
+            font-weight: bold;
+            font-size: 1em;
+            padding: 10px;
+        }
+        .container td {
+            padding: 10px;
+        }
+        .container tr:nth-child(odd) {
+            background-color: #323C50;
+        }
+        .container tr:nth-child(even) {
+            background-color: #2C3446;
+        }
+        .container tr:hover {
+            background-color: #464A52;
+        }
+        .container td:first-child {
+            color: #FB667A;
+        }
+        body {
+            background-color: #1F2739;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <img src="{{ url_for('static', filename='img/Lion.png') }}" alt="Logo" class="logo">
+    <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+    <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
+    <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+    <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='img/danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
+    <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+</div>
+<div class="content">
+    <form action="" method="POST">
+        <label for="target_ip">TARGET IP ADDRESS :</label>
+        <input type="text" id="target_ip" name="target_ip">
+        <input type="submit" value="SEND">
+    </form>
+    {% if output %}
+        <table class="container">
+            <thead>
+                <tr>
+                    <th>Bot ID</th>
+                    <th>Hostname</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bot_id, bot_info in output.items() %}
+                    <tr>
+                        <td>{{ bot_id }}</td>
+                        <td>{{ bot_info['hostname'] }}</td>
+                        <td>{{ bot_info['status'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+</body>
+</html>
