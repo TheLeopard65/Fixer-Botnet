@@ -50,6 +50,7 @@
         body {
             font-family: 'Impact', sans-serif;
             font-weight: 300;
+            padding: 10px;
             line-height: 1.42em;
             color: #A7A1AE;
             background-color: #1F2739;
@@ -181,7 +182,8 @@
         .sendcommands {
             display: flex;
             font-family: 'Impact', sans-serif;
-            font-size: 25px;
+            font-size: 28px;
+            padding: 10px;
             margin-left: 100px;
             flex-direction: row;
             align-items: center;
@@ -190,12 +192,11 @@
         .sendcommands label {
             margin-top: 10px;
             margin-bottom: 10px;
-            font-weight: bold;
             color: #ffffff;
             margin-right: 5px;
         }
         .sendcommands input[type="text"] {
-            width: auto;
+            width: 210px;
             padding: 8px;
             margin: 0 5px;
             border: 1px solid #ccc;
@@ -229,6 +230,7 @@
         <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
         <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
         <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='img/danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
         <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
     </div>
     <form id="commandForm" method="post" name="commandForm">
@@ -281,7 +283,7 @@
                         {% else %}
                             <pre>{{ task.output }}</pre>
                         {% endif %}
-                    </td>              
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
