@@ -1,3 +1,5 @@
+ <!-- Ping.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,37 +14,51 @@
             left: 0;
             background-color: #4caf50;
             overflow-x: hidden;
-            padding-top: 20px;
+            padding-top: 10px;
             text-align: left;
-            font-family: 'Impact', sans-serif;
         }
         .sidebar a {
-            padding: 10px;
+            padding: 3px;
             text-decoration: none;
             font-size: 22px;
             color: white;
             display: flex;
             align-items: center;
+            vertical-align: middle;
         }
         .sidebar img.avatar {
-            width: 30px;
+            width: 25px;
+            align-content: center;
             margin-bottom: 10px;
             margin-right: 10px;
+            vertical-align: middle;
         }
         .sidebar img.logo {
             align-content: center;
-            margin-left: 10px;
-            width: 200px;
-            margin-bottom: 20px;
+            margin-left: 35px;
+            width: 150px;
+            margin-bottom: 10px;
         }
         .sidebar a:hover {
             background-color: #45a049;
         }
         .content {
-            margin-left: 220px;
-            padding: 10px;
+            margin-left: 240px;
+            padding: 5px;
+            padding-top: 10px;
+            margin-top: 5px;
             font-family: 'Impact', sans-serif;
             color: white;
+        }
+        img {
+            display: block;
+        }
+        body {
+            font-family: 'Impact', sans-serif;
+            font-weight: 300;
+            line-height: 1.42em;
+            color: #A7A1AE;
+            background-color: #1F2739;
         }
         h1 {
             font-size: 3em;
@@ -55,7 +71,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         label {
             font-weight: bold;
@@ -69,13 +85,15 @@
             border-radius: 5px;
             border: 1px solid #ccc;
             margin-right: 10px;
-            width: 700px;
+            width: 850px;
         }
         input[type="submit"] {
             padding: 8px 15px;
             background-color: #4caf50;
             color: white;
             border: none;
+            width: 150px;
+            height: 40px;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -110,43 +128,43 @@
         .container td:first-child {
             color: #FB667A;
         }
-        body {
-            background-color: #1F2739;
-            margin: 0;
-        }
     </style>
 </head>
 <body>
-<div class="sidebar">
-    <img src="{{ url_for('static', filename='img/Lion.png') }}" alt="Logo" class="logo">
-    <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
-    <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
-    <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
-    <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='img/danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
-    <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
-</div>
+    <div class="sidebar">
+        <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
+        <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
+        <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+    </div>
 <div class="content">
-    <form action="" method="POST">
+    <form action="" method="GET">
         <label for="target_ip">TARGET IP ADDRESS :</label>
-        <input type="text" id="target_ip" name="target_ip">
+        <input type="text" id="target_ip" name="target_ip" placeholder="Enter Target IP Address to be sent here" required>
         <input type="submit" value="SEND">
     </form>
     {% if output %}
         <table class="container">
             <thead>
                 <tr>
-                    <th>Bot ID</th>
+                    <th>BOT-ID</th>
                     <th>Hostname</th>
-                    <th>Status</th>
+                    <th>STATUS</th>
                 </tr>
             </thead>
             <tbody>
-                {% for bot_id, bot_info in output.items() %}
-                    <tr>
-                        <td>{{ bot_id }}</td>
-                        <td>{{ bot_info['hostname'] }}</td>
-                        <td>{{ bot_info['status'] }}</td>
-                    </tr>
+                {% set displayed_ids = [] %}
+                {% for info in output %}
+                    {% if info['idNumber'] not in displayed_ids %}
+                        <tr>
+                            <td>{{ info['idNumber'] }}</td>
+                            <td>{{ info['hostname'] }}</td>
+                            <td>{{ info['output'] }}</td>
+                        </tr>
+                        {% set _ = displayed_ids.append(info['idNumber']) %}
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>
