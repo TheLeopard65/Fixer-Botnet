@@ -1,43 +1,11 @@
+ <!-- Dashboard.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>FIXER - Dashboard</title>
     <style>
-        .content {
-            margin-left: 200px;
-            padding: 20px;
-        }
-        .search-form {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .search-form label {
-            font-size: 25px;
-            font-weight: bold;
-            vertical-align: middle;
-            margin-right: 10px;
-            color: #FFF;
-        }
-        .search-form input[type="text"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-right: 10px;
-            width: 720px;
-        }
-        .search-form button {
-            padding: 8px 15px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .search-form button:hover {
-            background-color: #45a049;
-        }
         .sidebar {
             height: 100%;
             width: 220px;
@@ -46,27 +14,30 @@
             left: 0;
             background-color: #4caf50;
             overflow-x: hidden;
-            padding-top: 20px;
+            padding-top: 10px;
             text-align: left;
         }
         .sidebar a {
-            padding: 10px;
+            padding: 3px;
             text-decoration: none;
             font-size: 22px;
             color: white;
             display: flex;
             align-items: center;
+            vertical-align: middle;
         }
         .sidebar img.avatar {
-            width: 30px;
+            width: 25px;
+            align-content: center;
             margin-bottom: 10px;
             margin-right: 10px;
+            vertical-align: middle;
         }
         .sidebar img.logo {
             align-content: center;
-            margin-left: 10px;
-            width: 200px;
-            margin-bottom: 20px;
+            margin-left: 35px;
+            width: 150px;
+            margin-bottom: 10px;
         }
         .sidebar a:hover {
             background-color: #45a049;
@@ -90,6 +61,40 @@
         }
         #line-break-and-tab {
             white-space: pre-wrap;
+        }
+        .content {
+            margin-left: 200px;
+            margin-top: 10px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+            text-align: center;
+            padding-left: 20px;
+        }
+        .search-form label {
+            font-size: 25px;
+            vertical-align: middle;
+            margin-right: 10px;
+            color: #FFF;
+        }
+        .search-form input[type="text"] {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            width: 980px;
+        }
+        .search-form button {
+            padding: 8px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-form button:hover {
+            background-color: #45a049;
         }
         h1 {
             font-size: 3em;
@@ -121,13 +126,15 @@
         }
         .container th h1 {
             font-weight: bold;
-            font-size: 1em;
-            text-align: left;
+            font-size: 18px;
+            text-align: center;
             color: #FFF842;
         }
         .container td {
+            font-family: 'Impact', sans-serif;
             font-weight: normal;
             font-size: 1em;
+            text-align: center;
             -webkit-box-shadow: 0 2px 2px -2px #0E1119;
             -moz-box-shadow: 0 2px 2px -2px #0E1119;
             box-shadow: 0 2px 2px -2px #0E1119;
@@ -135,15 +142,14 @@
         .container {
             text-align: left;
             overflow: hidden;
-            width: 80%;
+            width: 100%;
             margin: 0 auto;
             display: table;
             padding: 0 0 8em 0;
         }
         .container td, .container th {
-            padding-bottom: 1%;
-            padding-top: 1%;
-            padding-left: 2%;
+            padding-bottom: 5px;
+            padding-top: 5px;
         }
         .container tr:nth-child(odd) {
             background-color: #323C50;
@@ -167,6 +173,7 @@
             background-color: #FFF842;
             color: #403E10;
             font-weight: bold;
+            text-align: center;
             box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
             transform: translate3d(4px, -4px, 0);
             transition-delay: 0s;
@@ -204,22 +211,22 @@
     </style>
 </head>
 <body>
-<div class="sidebar">
-    <img src="{{ url_for('static', filename='img/Lion.png') }}" alt="Logo" class="logo">
-    <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
-    <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
-    <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
-    <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='img/danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
-    <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
-</div>
+    <div class="sidebar">
+        <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
+        <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
+        <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+    </div>
 <div class="content">
     <div class="search-form">
         <label for="botIdSearch">SEARCH BOT BY BOT-ID:</label>
-        <input type="text" id="botIdSearch" placeholder="Enter Bot ID">
+        <input type="text" id="botIdSearch" placeholder="Enter BOT ID">
         <table align="center" class="container" id="botTable">
             <thead>
                 <tr>
-                    <th><h1>Bot ID</h1></th>
+                    <th><h1>BOT-ID</h1></th>
                     <th><h1>HOSTNAME</h1></th>
                     <th><h1>IP ADDRESS</h1></th>
                     <th><h1>OPERATING SYSTEM</h1></th>
@@ -229,7 +236,7 @@
             <tbody>
                 {% for client in database %}
                     <tr>
-                        <td>{{ client.idNum }}</td>
+                        <td>{{ client.idNumber }}</td>
                         <td>{{ client.hostname }}</td>
                         <td>{{ client.IP }}</td>
                         <td>{{ client.OS }}</td>
