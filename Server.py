@@ -7,8 +7,8 @@ app = Flask(__name__)
 server = SocketIO(app)
 app.secret_key = 'Fixer'
 
-USERNAME = 'Leopard'
-PASSWORD = 'leopard79864506'
+USERNAME = 'admin'
+PASSWORD = 'admin9876'
 idNumber = 0
 database = []
 completedTasks = []
