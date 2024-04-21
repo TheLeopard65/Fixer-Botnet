@@ -1,3 +1,5 @@
+ <!-- Modules.html -->
+
 {% set str = '' %}
 <!DOCTYPE html>
 <html lang="en">
@@ -13,27 +15,30 @@
             left: 0;
             background-color: #4caf50;
             overflow-x: hidden;
-            padding-top: 20px;
+            padding-top: 10px;
             text-align: left;
         }
         .sidebar a {
-            padding: 10px;
+            padding: 3px;
             text-decoration: none;
             font-size: 22px;
             color: white;
             display: flex;
             align-items: center;
+            vertical-align: middle;
         }
         .sidebar img.avatar {
-            width: 30px;
+            width: 25px;
+            align-content: center;
             margin-bottom: 10px;
             margin-right: 10px;
+            vertical-align: middle;
         }
         .sidebar img.logo {
             align-content: center;
-            margin-left: 10px;
-            width: 200px;
-            margin-bottom: 20px;
+            margin-left: 35px;
+            width: 150px;
+            margin-bottom: 10px;
         }
         .sidebar a:hover {
             background-color: #45a049;
@@ -50,7 +55,6 @@
         body {
             font-family: 'Impact', sans-serif;
             font-weight: 300;
-            padding: 10px;
             line-height: 1.42em;
             color: #A7A1AE;
             background-color: #1F2739;
@@ -91,33 +95,32 @@
         }
         .container th h1 {
             font-weight: bold;
-            font-size: 1em;
-            text-align: left;
+            font-size: 18px;
+            text-align: center;
             color: #FFF842;
         }
         .container td {
             font-family: 'Impact', sans-serif;
             font-weight: normal;
-            font-size: 14px;
+            font-size: 1em;
+            text-align: center;
             -webkit-box-shadow: 0 2px 2px -2px #0E1119;
             -moz-box-shadow: 0 2px 2px -2px #0E1119;
             box-shadow: 0 2px 2px -2px #0E1119;
-            line-height: 1px;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         .container {
             text-align: left;
             overflow: hidden;
-            width: 80%;
-            margin: 0 265px;
+            width: 86%;
+            margin: 0 215px;
             display: table;
             padding: 0 0 8em 0;
         }
         .container td, .container th {
-            padding-bottom: 1%;
-            padding-top: 1%;
-            padding-left: 2%;
+            padding-bottom: 5px;
+            padding-top: 5px;
         }
         .container tr:nth-child(odd) {
             background-color: #323C50;
@@ -174,6 +177,41 @@
         .list-type4 a:hover {
             background-color: #45a049;
         }
+        .styled-select {
+            display: inline-block;
+            position: relative;
+            width: 350px;
+            margin: 0 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+        .styled-select select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: transparent;
+            border: none;
+            font-size: 14px;
+            color: #555;
+            padding: 8px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .styled-select::after {
+            content: "\25BC";
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 8px 10px;
+            background-color: #4caf50;
+            color: #fff;
+            pointer-events: none;
+        }
+        .styled-select select:focus {
+            outline: none;
+        }
         .content {
             margin: auto;
             width: 85%;
@@ -184,7 +222,7 @@
             font-family: 'Impact', sans-serif;
             font-size: 28px;
             padding: 10px;
-            margin-left: 100px;
+            margin-left: 210px;
             flex-direction: row;
             align-items: center;
             justify-content: center;
@@ -196,22 +234,24 @@
             margin-right: 5px;
         }
         .sendcommands input[type="text"] {
-            width: 210px;
+            width: 390px;
             padding: 8px;
-            margin: 0 5px;
+            margin: 0 10px;
+            font-size: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
         }
         .sendcommands button {
-            padding: 10px 10px;
+            padding: 10px 20px;
             background-color: #4caf50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            margin: 0 5px;
+            margin: 0 10px;
+            width: 250px;
         }
         .sendcommands button:hover {
             background-color: #45a049;
@@ -226,84 +266,64 @@
 </head>
 <body>
     <div class="sidebar">
-        <img src="{{ url_for('static', filename='img/Lion.png') }}" alt="Logo" class="logo">
-        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='img/dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
-        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='img/modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
-        <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='img/commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
-        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='img/danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
-        <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='img/logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+        <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
+        <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
+        <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
     </div>
     <form id="commandForm" method="post" name="commandForm">
         <div class="sendcommands">
-            <label for="idNumber">ID:</label>
-            <input type="text" id="idNumber" name="idNumber" placeholder="Enter Bot ID">
+            <label for="idNumber">BOT-ID:</label>
+            <input type="text" id="idNumber" name="idNumber" placeholder="Enter BOT-ID" required>
             <label for="command">COMMAND:</label>
-            <input type="text" id="command" name="command" placeholder="Enter Command">
-            <button type="submit" id="submit">SEND</button>
-            <button type="button" id="startKeylogger">KEYLOGGER</button>
-            <button type="button" id="enablePersistence">PERSISTENCE</button>
-            <button type="button" id="takeScreenshot">SCREENSHOT</button>
+            <div class="styled-select">
+                <select id="command" name="command">
+                    <option value="persistence">Create Persistence Key</option>
+                    <option value="keylogger">Start Keylogger</option>
+                    <option value="screenshot">Capture Screenshot</option>
+                </select>
+            </div>
+            <button type="submit" id="submit">SEND THE MODULE</button>
         </div>
     </form>
-        {{ commandStatus }}
-        <table align="center" class="container">
+    <table align="center" class="container">
         <thead>
-        <tr>
-            <th><h1>BOT ID</h1></th>
-            <th><h1>HOSTNAME</h1></th>
-            <th><h1>COMMAND</h1></th>
-            <th><h1>OUTPUT</h1></th>
-        </tr>
+            <tr>
+                <th><h1>BOT ID</h1></th>
+                <th><h1>HOSTNAME</h1></th>
+                <th><h1>COMMAND</h1></th>
+                <th><h1>STATUS</h1></th>
+            </tr>
         </thead>
-        <tbody>
+        <tbody id="Module_Output_Status_Table">
             {% for task in taskDb[::-1] %}
                 <tr>
-                    <td>{{ task.idNum }}</td>
+                    <td>{{ task.idNumber }}</td>
                     <td>{{ task.hostname | default('N/A') }}</td>
-                    <td>{{ task.commandSent }}</td>
-                    <td>
-                        {% if task.commandSent == 'keylogger' %}
-                            {% if 'Keylogger started' in task.output %}
-                                <p>Keylogger started</p>
-                            {% elif 'Keylogger start failed' in task.output %}
-                                <p>Keylogger start failed</p>
-                            {% endif %}
-                        {% elif task.commandSent == 'screenshot' %}
-                            {% if 'Screenshot taken' in task.output %}
-                                <p>Screenshot taken</p>
-                            {% elif 'Error taking screenshot' in task.output %}
-                                <p>Error taking screenshot</p>
-                            {% endif %}
-                        {% elif task.commandSent == 'persistence' %}
-                            {% if 'Persistence Command executed successfully' in task.output %}
-                                <p>Persistence Command executed successfully</p>
-                            {% elif 'Persistence Command execution Failed' in task.output %}
-                                <p>Persistence Command execution Failed</p>
-                            {% endif %}
-                        {% else %}
-                            <pre>{{ task.output }}</pre>
-                        {% endif %}
-                    </td>
+                    <td>{{ task.command }}</td>
+                    <td>{{ task.status }}</td>
                 </tr>
-            {% endfor %}
+            {% endfor %}        
         </tbody>
     </table>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            $("#startKeylogger").click(function() {
+            $("#keylogger").click(function() {
                 $("#command").val("keylogger");
-                $("#commandForm").submit();
             });
-            $("#enablePersistence").click(function() {
+            $("#persistence").click(function() {
                 $("#command").val("persistence");
-                $("#commandForm").submit();
             });
-            $("#takeScreenshot").click(function() {
+            $("#screenshot").click(function() {
                 $("#command").val("screenshot");
+            });
+            $("#submit").click(function() {
                 $("#commandForm").submit();
             });
         });
-    </script>
+    </script>    
 </body>
 </html>
