@@ -4,3 +4,4 @@ flask
 pillow
 requests
 python-socketio
+flask-socketio
