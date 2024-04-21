@@ -24,8 +24,8 @@ This repository might not work on Linux because of winreg library in the persist
 
 1. Start the server by running `Server.py`.
 2. Connect clients to the server by running `Client.py` on remote machines.
-3. Access the dashboard at `http://server_ip:port/dashboard.html`.
-4. Login using the provided credentials.
+3. Access the dashboard at `http://server_ip:port/login.html`.
+4. Login using the provided credentials. USERNAME : `admin` and PASSWORD : `admin9876`
 5. Send commands to the connected clients via the dashboard interface.
 6. View the output and status of executed commands.
 
