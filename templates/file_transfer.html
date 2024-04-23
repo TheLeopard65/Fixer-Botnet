@@ -1,0 +1,320 @@
+ <!-- File_Transfer.html -->
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <title>FIXER - File Transfer</title>
+     <style>
+         .sidebar {
+             height: 100%;
+             width: 220px;
+             position: fixed;
+             top: 0;
+             left: 0;
+             background-color: #4caf50;
+             overflow-x: hidden;
+             padding-top: 10px;
+             text-align: left;
+         }
+         .sidebar a {
+             padding: 3px;
+             text-decoration: none;
+             font-size: 22px;
+             color: white;
+             display: flex;
+             align-items: center;
+             vertical-align: middle;
+         }
+         .sidebar img.avatar {
+             width: 25px;
+             align-content: center;
+             margin-bottom: 10px;
+             margin-right: 10px;
+             vertical-align: middle;
+         }
+         .sidebar img.logo {
+             align-content: center;
+             margin-left: 35px;
+             width: 150px;
+             margin-bottom: 10px;
+         }
+         .sidebar a.selected {
+             background-color: #3a893e;
+         }
+         .sidebar a.logout {
+             background-color: #317334;
+         }
+         .sidebar a:hover {
+             background-color: #409744;
+         }
+         .content {
+             margin-left: 240px;
+             padding: 5px;
+             padding-top: 10px;
+             margin-top: 5px;
+         }
+         img {
+             display: block;
+         }
+         body {
+             font-family: 'Impact', sans-serif;
+             font-weight: 300;
+             line-height: 1.42em;
+             color: #A7A1AE;
+             background-color: #1F2739;
+         }
+         #just-line-break {
+             white-space: pre-line;
+         }
+         #line-break-and-tab {
+             white-space: pre-wrap;
+         }
+         h1 {
+             font-size: 3em;
+             font-weight: 300;
+             line-height: 1em;
+             text-align: center;
+             color: #4DC3FA;
+         }
+         h2 {
+             font-size: 1em;
+             font-weight: 300;
+             text-align: center;
+             display: block;
+             line-height: 1em;
+             padding-bottom: 2em;
+             color: #FB667A;
+         }
+         h2 a {
+             font-weight: 700;
+             text-transform: uppercase;
+             color: #FB667A;
+             text-decoration: none;
+         }
+         .blue {
+             color: #185875;
+         }
+         .yellow {
+             color: #FFF842;
+         }
+         .container th h1 {
+             font-weight: bold;
+             font-size: 18px;
+             text-align: center;
+             color: #FFF842;
+         }
+         .container td {
+             font-family: 'Impact', sans-serif;
+             font-weight: normal;
+             font-size: 1em;
+             text-align: center;
+             -webkit-box-shadow: 0 2px 2px -2px #0E1119;
+             -moz-box-shadow: 0 2px 2px -2px #0E1119;
+             box-shadow: 0 2px 2px -2px #0E1119;
+             overflow: hidden;
+             text-overflow: ellipsis;
+         }
+         .container {
+             text-align: left;
+             overflow: hidden;
+             width: 86%;
+             margin: 0 215px;
+             display: table;
+             padding: 0 0 8em 0;
+         }
+         .container td, .container th {
+             padding-bottom: 5px;
+             padding-top: 5px;
+         }
+         .container tr:nth-child(odd) {
+             background-color: #323C50;
+         }
+         .container tr:nth-child(even) {
+             background-color: #2C3446;
+         }
+         .container th {
+             background-color: #1F2739;
+         }
+         .container td:first-child {
+             color: #FB667A;
+         }
+         .container tr:hover {
+             background-color: #464A52;
+             -webkit-box-shadow: 0 6px 6px -6px #0E1119;
+             -moz-box-shadow: 0 6px 6px -6px #0E1119;
+             box-shadow: 0 6px 6px -6px #0E1119;
+         }
+         .container td:hover {
+             background-color: #FFF842;
+             color: #403E10;
+             font-weight: bold;
+             box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
+             transform: translate3d(6px, -6px, 0);
+             transition-delay: 0s;
+             transition-duration: 0.4s;
+             transition-property: all;
+             transition-timing-function: line;
+         }
+         .list-type4 {
+             text-align: center;
+             margin-top: 5px;
+             margin-bottom: 5px;
+         }
+         .list-type4 ol {
+             list-style-type: none;
+             padding: 0;
+             margin: 0;
+         }
+         .list-type4 li {
+             display: inline-block;
+             margin: 5px;
+         }
+         .list-type4 a {
+             display: inline-block;
+             padding: 10px 20px;
+             background-color: #4caf50;
+             color: white;
+             text-decoration: none;
+             border-radius: 5px;
+             transition: background-color 0.3s ease;
+         }
+         .list-type4 a:hover {
+             background-color: #45a049;
+         }
+         .styled-select {
+             display: inline-block;
+             position: relative;
+             width: 220px;
+             margin: 0 10px;
+             border-radius: 8px;
+             overflow: hidden;
+             border: 1px solid #ccc;
+             background-color: #fff;
+         }
+         .styled-select select {
+             appearance: none;
+             -webkit-appearance: none;
+             -moz-appearance: none;
+             background: transparent;
+             border: none;
+             font-size: 14px;
+             color: #555;
+             padding: 8px;
+             width: 100%;
+             cursor: pointer;
+         }
+         .styled-select::after {
+             content: "\25BC";
+             position: absolute;
+             top: 0;
+             right: 0;
+             padding: 8px 10px;
+             background-color: #4caf50;
+             color: #fff;
+             pointer-events: none;
+         }
+         .styled-select select:focus {
+             outline: none;
+         }
+         .content {
+             margin: auto;
+             width: 85%;
+             padding: 20px;
+         }
+         .sendcommands {
+             display: flex;
+             font-family: 'Impact', sans-serif;
+             font-size: 28px;
+             padding: 10px;
+             margin-left: 210px;
+             flex-direction: row;
+             align-items: center;
+             justify-content: center;
+         }
+         .sendcommands label {
+             margin-top: 10px;
+             margin-bottom: 10px;
+             color: #ffffff;
+             margin-right: 5px;
+         }
+         .sendcommands input[type="text"] {
+             width: 350px;
+             padding: 8px;
+             margin: 0 10px;
+             font-size: 15px;
+             border: 1px solid #ccc;
+             border-radius: 5px;
+             box-sizing: border-box;
+         }
+         .sendcommands button {
+             padding: 10px 20px;
+             background-color: #4caf50;
+             color: white;
+             border: none;
+             border-radius: 5px;
+             cursor: pointer;
+             transition: background-color 0.3s ease;
+             margin: 0 10px;
+             width: 150px;
+         }
+         .sendcommands button:hover {
+             background-color: #45a049;
+         }
+         @media (max-width: 800px) {
+             .container td:nth-child(4),
+             .container th:nth-child(4) {
+                 display: none;
+             }
+         }
+     </style>
+ </head>
+ <body>
+     <div class="sidebar">
+         <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
+         <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+         <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
+         <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+         <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDOS Ping Icon" class="avatar"> DDOS Ping</a>
+         <a href="{{ url_for('file_transfer') }}" class="selected"><img src="{{ url_for('static', filename='file_transfer_icon.png') }}" alt="File Transfer Icon" class="avatar"> File Transfer</a>
+         <a href="{{ url_for('logout') }}" class="logout"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+     </div>
+     <form id="fileTransferForm" method="GET" name="fileTransferForm">
+        <div class="sendcommands">
+            <div class="styled-select">
+                <select id="transferType" name="transferType">
+                    <option value="download">Download File</option>
+                    <option value="upload">Upload File</option>
+                </select>
+            </div>
+            <label for="idNumber">BOT-ID:</label>
+            <input type="text" id="idNumber" name="idNumber" placeholder="Enter BOT-ID" required>
+            <label for="fileName">FILE:</label>
+            <input type="text" id="fileName" name="fileName" placeholder="Enter File Name" required>
+            <button type="submit" id="submit">TRANSFER</button>
+        </div>
+    </form>
+    <table align="center" class="container">
+        <thead>
+            <tr>
+                <th><h1>BOT ID</h1></th>
+                <th><h1>HOSTNAME</h1></th>
+                <th><h1>TRANSFER TYPE</h1></th>
+                <th><h1>FILE NAME</h1></th>
+                <th><h1>STATUS</h1></th>
+            </tr>
+        </thead>
+        <tbody id="Module_Output_Status_Table">
+            {% for task in transfer[::-1] %}
+                <tr>
+                    <td>{{ task.idNumber }}</td>
+                    <td>{{ task.hostname | default('N/A') }}</td>
+                    <td>{{ task.transfer_type }}</td>
+                    <td>{{ task.file_name }}</td>
+                    <td>{{ task.status }}</td>
+                </tr>
+            {% endfor %}        
+        </tbody>
+    </table>
+ </body>
+ </html>
