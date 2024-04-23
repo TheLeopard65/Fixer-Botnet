@@ -1,7 +1,7 @@
-pynput
-pyscreenshot
 flask
+flask-socketio
+pynput
+pyautogui
 pillow
 requests
 python-socketio
-flask-socketio
