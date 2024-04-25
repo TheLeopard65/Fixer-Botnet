@@ -5,3 +5,7 @@ pyautogui
 pillow
 requests
 python-socketio
+soundfile
+sounddevice
+opencv-python
+pyinstaller
