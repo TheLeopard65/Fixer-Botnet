@@ -27,18 +27,17 @@
              vertical-align: middle;
          }
          .sidebar img.avatar {
-             width: 25px;
-             align-content: center;
-             margin-bottom: 10px;
-             margin-right: 10px;
-             vertical-align: middle;
-         }
-         .sidebar img.logo {
-             align-content: center;
-             margin-left: 35px;
-             width: 150px;
-             margin-bottom: 10px;
-         }
+            width: 25px;
+            align-items: center;
+            margin-bottom: 10px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .sidebar img.logo {
+            margin-left: 35px;
+            width: 150px;
+            margin-bottom: 10px;
+        }
          .sidebar a.selected {
              background-color: #3a893e;
          }
@@ -273,6 +272,7 @@
      <div class="sidebar">
          <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
          <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+         <a href="{{ url_for('payload') }}"><img src="{{ url_for('static', filename='payload_icon.png') }}" alt="Payload Icon" class="avatar"> Payload</a>
          <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
          <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
          <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDOS Ping Icon" class="avatar"> DDOS Ping</a>
@@ -283,8 +283,8 @@
         <div class="sendcommands">
             <div class="styled-select">
                 <select id="transferType" name="transferType">
-                    <option value="download">Download File</option>
-                    <option value="upload">Upload File</option>
+                    <option value="download">DOWNLOAD FILE</option>
+                    <option value="upload">UPLOAD FILE</option>
                 </select>
             </div>
             <label for="idNumber">BOT-ID:</label>
@@ -307,14 +307,17 @@
         <tbody id="Module_Output_Status_Table">
             {% for task in transfer[::-1] %}
                 <tr>
-                    <td>{{ task.idNumber }}</td>
-                    <td>{{ task.hostname | default('N/A') }}</td>
-                    <td>{{ task.transfer_type }}</td>
-                    <td>{{ task.file_name }}</td>
-                    <td>{{ task.status }}</td>
+                <td>{{ task.idNumber }}</td>
+                <td>{{ task.hostname | default('N/A') }}</td>
+                <td>{{ task.transfer_type }}</td>
+                <td>{{ task.file_name }}</td>
+                <td>{{ task.status }}</td>
                 </tr>
-            {% endfor %}        
-        </tbody>
+            {% endfor %}
+          </tbody>
     </table>
+<script>
+    setInterval(function () { window.location.href = window.location.origin + window.location.pathname; }, 10000);
+</script>
  </body>
  </html>
