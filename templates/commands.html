@@ -28,13 +28,12 @@
         }
         .sidebar img.avatar {
             width: 25px;
-            align-content: center;
+            align-items: center;
             margin-bottom: 10px;
             margin-right: 10px;
             vertical-align: middle;
         }
         .sidebar img.logo {
-            align-content: center;
             margin-left: 35px;
             width: 150px;
             margin-bottom: 10px;
@@ -114,7 +113,7 @@
         }
         #output {
             margin-top: 20px;
-            margin-left: 230px;
+            margin-left: 240px;
             font-size: 16px;
             color: #fff;
             font-family: Arial, sans-serif;
@@ -125,6 +124,7 @@
     <div class="sidebar">
         <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
         <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('payload') }}"><img src="{{ url_for('static', filename='payload_icon.png') }}" alt="Payload Icon" class="avatar"> Payload</a>
         <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
         <a href="{{ url_for('commands') }}" class="selected"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
         <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDOS Ping Icon" class="avatar"> DDOS Ping</a>
@@ -183,6 +183,7 @@
                 requestInProgress = false;
             }
         }
+        setInterval(function () {   window.location.reload();   }, 10000);
     </script>
 </body>
 </html>
