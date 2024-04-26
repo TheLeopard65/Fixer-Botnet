@@ -7,46 +7,61 @@
      <title>FIXER - File Transfer</title>
      <style>
          .sidebar {
-             height: 100%;
-             width: 220px;
-             position: fixed;
-             top: 0;
-             left: 0;
-             background-color: #4caf50;
-             overflow-x: hidden;
-             padding-top: 10px;
-             text-align: left;
-         }
-         .sidebar a {
-             padding: 3px;
-             text-decoration: none;
-             font-size: 22px;
-             color: white;
-             display: flex;
-             align-items: center;
-             vertical-align: middle;
-         }
-         .sidebar img.avatar {
+            height: 100%;
+            width: 220px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #4caf50;
+            overflow-x: hidden;
+            padding-top: 10px;
+            text-align: left;
+        }
+        .sidebar a {
+            padding: 3px;
+            text-decoration: none;
+            font-size: 22px;
+            color: white;
+            display: flex;
+            align-items: center;
+            vertical-align: middle;
+        }
+        .sidebar img.avatar {
             width: 25px;
+            margin-left: 10px;
             align-items: center;
             margin-bottom: 10px;
-            margin-right: 10px;
+            margin-right: 15px;
             vertical-align: middle;
         }
         .sidebar img.logo {
-            margin-left: 35px;
-            width: 150px;
+            margin-left: 10px;
+            width: 200px;
             margin-bottom: 10px;
         }
-         .sidebar a.selected {
-             background-color: #3a893e;
-         }
-         .sidebar a.logout {
-             background-color: #317334;
-         }
-         .sidebar a:hover {
-             background-color: #409744;
-         }
+        .sidebar h1 {
+            font-family: 'Impact', sans-serif;
+            font-weight: 500;
+            border: 1px solid white;
+            border-width: 2px;
+            border-radius: 10px;
+            padding: 5px;
+            font-size: 2em;
+            margin-left: 1px;
+            font-weight: 300;
+            line-height: 1em;
+            text-align: center;
+            color: #ba0000;
+        }
+        .sidebar a.selected {
+            background-color: #3a893e;
+        }
+        .sidebar a.logout {
+            background-color: #317334;
+        }
+        .sidebar a:hover {
+            background-color: #409744;
+        }
          .content {
              margin-left: 240px;
              padding: 5px;
@@ -271,6 +286,7 @@
  <body>
      <div class="sidebar">
          <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
+         <h1>FIXER BOTNET</h1>
          <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
          <a href="{{ url_for('payload') }}"><img src="{{ url_for('static', filename='payload_icon.png') }}" alt="Payload Icon" class="avatar"> Payload</a>
          <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
