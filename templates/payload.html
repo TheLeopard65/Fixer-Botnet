@@ -28,15 +28,30 @@
         }
         .sidebar img.avatar {
             width: 25px;
+            margin-left: 10px;
             align-items: center;
             margin-bottom: 10px;
-            margin-right: 10px;
+            margin-right: 15px;
             vertical-align: middle;
         }
         .sidebar img.logo {
-            margin-left: 35px;
-            width: 150px;
+            margin-left: 10px;
+            width: 200px;
             margin-bottom: 10px;
+        }
+        .sidebar h1 {
+            font-family: 'Impact', sans-serif;
+            font-weight: 500;
+            border: 1px solid white;
+            border-width: 2px;
+            border-radius: 10px;
+            padding: 5px;
+            font-size: 2em;
+            margin-left: 1px;
+            font-weight: 300;
+            line-height: 1em;
+            text-align: center;
+            color: #ba0000;
         }
         .sidebar a.selected {
             background-color: #3a893e;
@@ -95,7 +110,6 @@
             margin-left: 210px;
             margin-right: 5px;
             flex-direction: row;
-            align-items: center;
         }
         .sendcommands label {
             margin-bottom: 10px;
@@ -177,6 +191,7 @@
 <body>
     <div class="sidebar">
         <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
+        <h1>FIXER BOTNET</h1>
         <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
         <a href="{{ url_for('payload') }}" class="selected"><img src="{{ url_for('static', filename='payload_icon.png') }}" alt="Payload Icon" class="avatar"> Payload</a>
         <a href="{{ url_for('modules') }}"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
@@ -199,6 +214,7 @@
         </form>
         <div>
             <h1>PAYLOAD</h1>
+            <div id="forceConvertNote" style="display: none; color: #FF0000; font-size: 22px;">NOTE : Conversion of Python file to an Executable File may take some Time. Please Be Patient</div>
             <div id="payloadString">{{string}}</div>
             <div id="copybutton"><button onclick="copyPayload()">COPY</button></div>
         </div>
@@ -214,6 +230,14 @@
             window.getSelection().removeAllRanges();
             alert('Payload string copied!');
         }
+        document.getElementById('forceConvert').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('forceConvertNote').style.display = 'block';
+                document.getElementById('forceConvertNote').style.marginLeft = '420px';
+            } else {
+                document.getElementById('forceConvertNote').style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
