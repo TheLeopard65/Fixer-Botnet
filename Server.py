@@ -4,8 +4,9 @@ from flask import Flask, request, render_template, redirect, url_for, session, j
 from flask_socketio import SocketIO
 import os, subprocess, base64
 
+MAX_BUFFER_SIZE = 50 * 1000 * 1000
 app = Flask(__name__)
-server = SocketIO(app)
+server = SocketIO(app, max_http_buffer_size=MAX_BUFFER_SIZE)
 app.secret_key = 'Fixer'
 
 USERNAME = 'admin'
