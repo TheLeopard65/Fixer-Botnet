@@ -4,151 +4,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>FIXER - DDOS Ping</title>
-    <style>
-        .sidebar {
-            height: 100%;
-            width: 220px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #4caf50;
-            overflow-x: hidden;
-            padding-top: 10px;
-            text-align: left;
-        }
-        .sidebar a {
-            padding: 3px;
-            text-decoration: none;
-            font-size: 22px;
-            color: white;
-            display: flex;
-            align-items: center;
-            vertical-align: middle;
-        }
-        .sidebar img.avatar {
-            width: 25px;
-            margin-left: 10px;
-            align-items: center;
-            margin-bottom: 10px;
-            margin-right: 15px;
-            vertical-align: middle;
-        }
-        .sidebar img.logo {
-            margin-left: 10px;
-            width: 200px;
-            margin-bottom: 10px;
-        }
-        .sidebar h1 {
-            font-family: 'Impact', sans-serif;
-            font-weight: 500;
-            border: 1px solid white;
-            border-width: 2px;
-            border-radius: 10px;
-            padding: 5px;
-            font-size: 2em;
-            margin-left: 1px;
-            font-weight: 300;
-            line-height: 1em;
-            text-align: center;
-            color: #ba0000;
-        }
-        .sidebar a.selected {
-            background-color: #3a893e;
-        }
-        .sidebar a.logout {
-            background-color: #317334;
-        }
-        .sidebar a:hover {
-            background-color: #409744;
-        }
-        .content {
-            margin-left: 240px;
-            padding: 5px;
-            padding-top: 10px;
-            margin-top: 5px;
-            font-family: 'Impact', sans-serif;
-            color: white;
-        }
-        img {
-            display: block;
-        }
-        body {
-            font-family: 'Impact', sans-serif;
-            font-weight: 300;
-            line-height: 1.42em;
-            color: #A7A1AE;
-            background-color: #1F2739;
-        }
-        h1 {
-            font-size: 3em;
-            font-weight: 300;
-            line-height: 1em;
-            text-align: center;
-            color: #4DC3FA;
-        }
-        form {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 10px;
-        }
-        label {
-            font-weight: bold;
-            font-size: 28px;
-            vertical-align: middle;
-            margin-right: 10px;
-            color: #FFF;
-        }
-        input[type="text"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-right: 10px;
-            width: 850px;
-        }
-        input[type="submit"] {
-            padding: 8px 15px;
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            width: 150px;
-            height: 40px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        .container {
-            width: 100%;
-            margin-top: 20px;
-            text-align: center;
-        }
-        .container th {
-            background-color: #1F2739;
-            color: #FFF842;
-            font-weight: bold;
-            font-size: 1em;
-            padding: 5px;
-        }
-        .container td {
-            padding: 5px;
-        }
-        .container tr:nth-child(odd) {
-            background-color: #323C50;
-        }
-        .container tr:nth-child(even) {
-            background-color: #2C3446;
-        }
-        .container tr:hover {
-            background-color: #464A52;
-        }
-        .container td:first-child {
-            color: #FB667A;
-        }
-    </style>
+    <link rel="shortcut icon" href="../static/Lion.png" type="image/png">
+    <title>FIXER - DDOS ATTACK</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="sidebar">
@@ -162,19 +20,20 @@
         <a href="{{ url_for('file_transfer') }}"><img src="{{ url_for('static', filename='file_transfer_icon.png') }}" alt="File Transfer Icon" class="avatar"> File Transfer</a>
         <a href="{{ url_for('logout') }}" class="logout"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
     </div>
-<div class="content">
-    <form action="" method="GET">
-        <label for="target_ip">TARGET IP ADDRESS :</label>
-        <input type="text" id="target_ip" name="target_ip" placeholder="Enter Target IP Address to be sent here" required>
-        <input type="submit" value="SEND">
-    </form>
-    {% if output %}
-        <table class="container">
+    <div class="form">
+        <form id="form" method="GET" name="form">
+            <label for="target">TARGET IP ADDRESS :</label>
+            <input type="text" id="target" name="target" style="width: 770px;" placeholder="Enter Target IP Address to be sent here" required>
+            <button type="submit" id="submit">SELECT TARGET</button>
+        </form>
+    </div>
+    <div class="table">
+        <table class="table">
             <thead>
                 <tr>
                     <th>BOT-ID</th>
-                    <th>Hostname</th>
-                    <th>STATUS</th>
+                    <th>HOSTNAME</th>
+                    <th>DDOS STATUS</th>
                 </tr>
             </thead>
             <tbody>
@@ -187,10 +46,9 @@
                 {% endfor %}
             </tbody>
         </table>
-    {% endif %}
-</div>
-<script>
-    setInterval(function () { window.location.href = window.location.origin + window.location.pathname; }, 12000);
-</script>
+    </div>
+    <script>
+        setInterval(function () { window.location.href = window.location.origin + window.location.pathname; }, 20000);
+    </script>
 </body>
 </html>
