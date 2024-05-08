@@ -33,6 +33,7 @@
                 <tr>
                     <th>BOT-ID</th>
                     <th>HOSTNAME</th>
+                    <th>TARGET</th>
                     <th>DDOS STATUS</th>
                 </tr>
             </thead>
@@ -41,6 +42,7 @@
                         <tr>
                             <td>{{ info['idNumber'] }}</td>
                             <td>{{ info['hostname'] }}</td>
+                            <td>{{ info['target'] }}</td>
                             <td>{{ info['output'] }}</td>
                         </tr>
                 {% endfor %}
