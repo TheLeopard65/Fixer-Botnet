@@ -12,7 +12,7 @@ events = sqlite3.connect("Events.db")
 if not os.path.exists("Events.db"):
     events.execute("Create table Bots (bot_id INT AUTO_INCREMENT PRIMARY KEY, hostname VARCHAR(50), ip_address VARCHAR(15), os VRACHAR(50), status VARCHAR(5))")
     events.execute("Create table Modules (bot_id INT PRIMARY KEY, hostname VARCHAR(50), command VRACHAR(80), status VARCHAR(150))")
-    events.execute("Create table Commands (bot_id INT PRIMARY KEY, hostname VARCHAR(50), command VRACHAR(80), output VARCHAR(8))")
+    events.execute("Create table Commands (bot_id INT PRIMARY KEY, hostname VARCHAR(50), command VRACHAR(80), output VARCHAR(20))")
     events.execute("Create table DDOS_Attacks (serial_no INT AUTO_INCREMENT PRIMARY KEY, target VRACHAR(15))")
     events.execute("Create table File_Transfer (bot_id INT PRIMARY KEY, hostname VARCHAR(50), transfer_type VRACHAR(80), filename VARCHAR(350), status VARCHAR(250))")
     events.execute("Create table Payloads (serial_no INT AUTO_INCREMENT PRIMARY KEY, server_ip VARCHAR(15), port VARCHAR(5), force_convert VARCHAR(5))")
