@@ -8,6 +8,7 @@ MAX_BUFFER_SIZE = 50 * 1000 * 1000
 app = Flask(__name__)
 server = SocketIO(app, max_http_buffer_size=MAX_BUFFER_SIZE)
 app.secret_key = 'Fixer'
+
 events = sqlite3.connect("Events.db")
 if not os.path.exists("Events.db"):
     events.execute("Create table Bots (bot_id INT AUTO_INCREMENT PRIMARY KEY, hostname VARCHAR(50), ip_address VARCHAR(15), os VRACHAR(50), status VARCHAR(5))")
