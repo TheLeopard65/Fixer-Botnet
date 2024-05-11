@@ -297,7 +297,6 @@ def onDisconnect():
 @server.on('Initial_Information')
 def handleInformation(Initial_Information):
     server.emit('idNumber', {'idNumber': idNumber})
-    print(idNumber)
     database.append(Client(Initial_Information))
     hostname = Initial_Information.get("hostname")
     operating_system = Initial_Information.get("OS")
