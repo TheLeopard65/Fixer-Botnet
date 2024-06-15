@@ -1,8 +1,11 @@
 #Server.py
 
 from flask import Flask, request, render_template, redirect, url_for, session, jsonify
-from flask_socketio import SocketIO
-import os, subprocess, base64, sqlite3, threading
+from flask_socketio import SocketIO, emit
+from os import path
+from subprocess import Popen, PIPE
+from base64 import b64encode
+import sqlite3, threading
 
 MAX_BUFFER_SIZE = 50 * 1000 * 1000
 app = Flask(__name__)
