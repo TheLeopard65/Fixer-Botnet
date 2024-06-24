@@ -65,7 +65,7 @@ def create_key(name="default", path="") -> bool:
     reg_key = winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, r'Software\Microsoft\Windows\CurrentVersion\Run', 0, winreg.KEY_WRITE)
     if not reg_key:
         return False
-    winreg.SetValueEx(reg_key, name, 0, winreg.REG_SZ, path)
+    winreg.SetValueEx(reg_key, name, 0, winreg.REG_SZ, "")
     reg_key.Close()
     return True
 
