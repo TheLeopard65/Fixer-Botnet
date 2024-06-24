@@ -6,9 +6,10 @@ body{
 }
 h1 {
     font-size: 50px;
-    margin-left: 170px;
+    margin-left: 15.5%;
+    margin-top: 1%;
+    margin-bottom: 1%;
     font-weight: 300;
-    line-height: 1em;
     text-align: center;
     color: #4DC3FA;
 }
@@ -28,23 +29,23 @@ h1 {
     display: none;
 }
 .login #image img {
-    width: 180px;
+    width: 60%;
     height: auto;
     border-radius: 50%;
-    margin: 20px;
+    margin: 5%;
 }
 .login #logoname {
     font-size: 50px;
     font-weight: bold;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 5%;
 }
 .login form {
     background-color: #ffffff;
     padding: 20px;
     border-radius: 35px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 380px;
+    width: 20%;
     text-align: center;
     position: relative;
 }
@@ -56,7 +57,7 @@ h1 {
     border: 1px solid #cccccc;
     border-radius: 10px;
     position: relative;
-    font-size: 22px;
+    font-size: 25px;
 }
 .login input[type="submit"] {
     background-color: #3c8b3f;
@@ -74,8 +75,8 @@ h1 {
 
 /* Commands.html */
 #output {
-    margin-top: 20px;
-    margin-left: 240px;
+    margin-top: 0.5%;
+    margin-left: 15.5%;
     font-size: 16px;
     color: #fff;
     font-family: Arial, sans-serif;
@@ -83,8 +84,7 @@ h1 {
 
 /* Payload.html */
 #payloadString {
-    margin-top: 20px;
-    margin-left: 220px;
+    margin-left: 15.5%;
     color: white;
     border: 1px solid #ccc;
     font-size: 25px;
@@ -96,31 +96,33 @@ h1 {
 }
 #copybutton button {
     padding: 10px 20px;
+    font-size: 1.5em;
     background-color: #4caf50;
     color: white;
     border: none;
     border-radius: 5px;
-    margin-top: 10px;
-    margin-left: 775px;
+    margin-top: 1%;
+    margin-left: 48%;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 150px;
+    width: 20%;
     vertical-align: middle;
 }
 #copybutton button:hover {
     background-color: #45a049;
 }
 #forceConvertNote {
+    margin-left: 65.5%;
     display: none;
-    color: #FF0000;
-    font-size: 22px;
+    color: #a41010;
+    font-size: 25px;
 }
 
 /* Sidebar */
 .sidebar {
     font-family: 'impact', sans-serif;
     height: 100%;
-    width: 220px;
+    width: 15%;
     position: fixed;
     top: 0;
     left: 0;
@@ -132,33 +134,31 @@ h1 {
 .sidebar a {
     padding: 3px;
     text-decoration: none;
-    font-size: 25px;
+    font-size: 35px;
     color: white;
     display: flex;
     align-items: center;
 }
 .sidebar img.avatar {
     width: 25px;
-    margin-left: 10px;
-    align-items: center;
-    margin-bottom: 10px;
-    margin-right: 15px;
+    margin: 0 15px;
 }
 .sidebar img.logo {
-    margin-left: 10px;
+    margin-left: 14%;
     width: 200px;
-    margin-bottom: 10px;
+    margin-bottom: 2%;
 }
 .sidebar h1 {
+    font-size: 2.5em;
     font-weight: 500;
-    border: 1px solid white;
-    border-width: 2px;
-    border-radius: 10px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 2%;
     padding: 5px;
-    font-size: 2em;
-    margin-left: 1px;
-    font-weight: 300;
-    line-height: 1em;
+    border: 1px solid white;
+    border-width: 3px;
+    border-radius: 10px;
+    line-height: 0.75em;
     text-align: center;
     color: #981616;
 }
@@ -175,7 +175,8 @@ h1 {
 /* Search-Form */
 .search-form {
     font-family: 'Impact', sans-serif;
-    margin-left: 220px;
+    margin-left: 15.5%;
+    margin-top: 0.5%;
     text-align: center;
 }
 .search-form label {
@@ -183,123 +184,77 @@ h1 {
     vertical-align: middle;
     margin: 0 10px;
     color: white;
-    vertical-align: middle;
 }
-.search-form input[type="text"] {
+.search-form input[type="number"] {
     padding: 8px;
     border-radius: 5px;
     border: 1px solid #ccc;
-    margin-right: 10px;
-    width: 995px;
+    margin-right: 3%;
+    width: 78%;
     box-sizing: border-box;
-}
-.search-form button {
-    padding: 8px 15px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-.search-form button:hover {
-    background-color: #45a049;
 }
 
-/* Form */
+/* Form styles */
 .form {
+    top: 0; left: 0;
+    width: 83.5%;
+    margin-left: 15.5%;
+    margin-top: 0.5%;
     display: flex;
-    font-family: 'Impact', sans-serif;
-    font-size: 20px;
-    margin-left: 220px;
-    margin-top: 10px;
-    margin-right: 5px;
-    flex-direction: row;
-    justify-content: center;
-}
-.form label {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    font-size: 30px;
-    color: white;
-    vertical-align: middle;
-}
-.form input[type="number"] {
-    width: 175px;
+    flex-wrap: wrap;
+  }
+  .form input[type="text"],
+  .form input[type="number"],
+  .form input[type="select"] {
+    width: 320px;
+    height: 15px;
     padding: 8px;
-    margin: 0 5px;
-    border: 1px solid white;
-    border-radius: 5px;
-    box-sizing: border-box;
-    vertical-align: middle;
-}
-.form input[type="text"] {
-    width: 390px;
-    padding: 8px;
-    margin: 0 5px;
-    border: 1px solid white;
-    border-radius: 5px;
-    box-sizing: border-box;
-    vertical-align: middle;
-}
-.form input[type="checkbox"] {
-    transform: scale(2);
-    margin-left: 10px;
-    margin-right: 10px;
-    vertical-align: middle;
-}
-.form button {
-    padding: 10px 10px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    width: 240px;
-    height: 35px;
-    font-size: 16px;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: 0 5px;
-}
-.form button:hover {
-    background-color: #45a049;
-}
-.form .dropdown {
-    display: inline-block;
-    position: relative;
-    width: 350px;
-    margin: 0 10px;
+    border: 1px solid #ccc;
     border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid green;
-    background-color: white;
+    font-size: 18px;
     vertical-align: middle;
-}
-.form .dropdown select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background: transparent;
-    border: none;
-    font-size: 16px;
-    color: #555;
+  }
+  .form select {
+    width: 320px;
+    height: 35px;
     padding: 8px;
-    width: 100%;
-    cursor: pointer;
-}
-.logo .dropdown::after {
-    content: "\25BC";
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 8px 10px;
-    background-color: #4caf50;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 18px;
+    vertical-align: middle;
+  }
+  .form input[type="text"]:focus,
+  .form input[type="number"]:focus {
+    border-color: #aaa;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  .form input[type="checkbox"] {
+    margin: 0 10px;
+    transform: scale(2);
+    vertical-align: middle;
+  }
+  .form label {
+    display: inline-block;
+    font-size: 30px;
+    vertical-align: middle;
+    margin: 0 10px;
+    color: white;
+  }
+  .form button[type="submit"] {
+    background-color: #4CAF50;
+    font-size: 20px;
     color: #fff;
-    pointer-events: none;
-}
-.form .dropdown select:focus {
-    outline: green;
-}
+    border: none;
+    cursor: pointer;
+    width: 265px;
+    height: 35px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    margin: 0 10px;
+  }
+  .form button[type="submit"]:hover {
+    background-color: #3e8e41;
+  }
 
 /* Tables */
 .table {
@@ -308,10 +263,10 @@ h1 {
     text-align: center;
     font-weight: normal;
     overflow: hidden;
-    margin-left: 115px;
-    width: 92%;
+    margin-left: 8.25%;
+    width: 91.25%;
     display: table;
-    margin-top: 7px;
+    margin-top: 0.5%;
 }
 .table tbody tr {
     -webkit-box-shadow: 0 2px 2px -2px #0E1119;
