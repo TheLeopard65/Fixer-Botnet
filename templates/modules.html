@@ -12,29 +12,27 @@
     <div class="sidebar">
         <img src="{{ url_for('static', filename='Lion.png') }}" alt="Logo" class="logo">
         <h1>FIXER BOTNET</h1>
-        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> Dashboard</a>
-        <a href="{{ url_for('payload') }}"><img src="{{ url_for('static', filename='payload_icon.png') }}" alt="Payload Icon" class="avatar"> Payload</a>
-        <a href="{{ url_for('modules') }}" class="selected"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> Modules</a>
-        <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> Commands</a>
-        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDOS Ping Icon" class="avatar"> DDOS Ping</a>
-        <a href="{{ url_for('file_transfer') }}"><img src="{{ url_for('static', filename='file_transfer_icon.png') }}" alt="File Transfer Icon" class="avatar"> File Transfer</a>
-        <a href="{{ url_for('logout') }}" class="logout"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> Logout</a>
+        <a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', filename='dashboard_icon.png') }}" alt="Dashboard Icon" class="avatar"> DASHBOARD</a>
+        <a href="{{ url_for('payload') }}"><img src="{{ url_for('static', filename='payload_icon.png') }}" alt="Payload Icon" class="avatar"> PAYLOAD</a>
+        <a href="{{ url_for('modules') }}" class="selected"><img src="{{ url_for('static', filename='modules_icon.png') }}" alt="Modules Icon" class="avatar"> MODULES</a>
+        <a href="{{ url_for('commands') }}"><img src="{{ url_for('static', filename='commands_icon.png') }}" alt="Commands Icon" class="avatar"> COMMANDS</a>
+        <a href="{{ url_for('ping') }}"><img src="{{ url_for('static', filename='danger_icon.png') }}" alt="DDOS Ping Icon" class="avatar"> DDOS PING</a>
+        <a href="{{ url_for('file_transfer') }}"><img src="{{ url_for('static', filename='file_transfer_icon.png') }}" alt="File Transfer Icon" class="avatar"> FILE TRANSFER</a>
+        <a href="{{ url_for('logout') }}" class="logout"><img src="{{ url_for('static', filename='logout_icon.png') }}" alt="Logout Icon" class="avatar"> LOGOUT</a>
     </div>
     <div class="form">
         <form id="form" method="post" name="form">
             <label for="idNumber">BOT-ID:</label>
-            <input type="text" id="idNumber" name="idNumber" placeholder="Enter BOT-ID" required>
+            <input type="number" id="idNumber" name="idNumber" style="width: 450px;" required>
             <label for="command">COMMAND:</label>
-            <div class="dropdown">
-                <select id="command" name="command">
-                    <option value="persistence">Create Persistence Key</option>
-                    <option value="keylogger">Start Keylogger</option>
-                    <option value="screenshot">Capture Screenshot</option>
-                    <option value="picture">Capture Picture</option>
-                    <option value="audio">Record Audio (5 Seconds)</option>
-                </select>
-            </div>
-            <button type="submit" id="submit">SEND THE MODULE</button>
+            <select id="command" name="command" style="width: 460px;">
+                <option value="persistence">Create Persistence Key</option>
+                <option value="keylogger">Start Keylogger</option>
+                <option value="screenshot">Capture Screenshot</option>
+                <option value="picture">Capture Picture</option>
+                <option value="audio">Record Audio (5 Seconds)</option>
+            </select>
+            <button type="submit" id="submit" style="width: 370px;">SEND MODULE</button>
         </form>
     </div>
     <div class="table">
