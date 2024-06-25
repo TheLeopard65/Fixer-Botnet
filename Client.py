@@ -266,8 +266,7 @@ def connect():
     info['sid'] = client.sid
     client.emit('Initial_Information', info)
     print("SUCCESS ✅: CONNECTED TO THE SERVER")
-    persistance = threading.Thread(target=try_persistence)
-    persistance.start()
+    try_persistence()
 
 @client.event
 def disconnect():
