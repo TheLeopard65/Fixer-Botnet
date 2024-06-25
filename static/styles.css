@@ -134,8 +134,8 @@ h1 {
 .sidebar a {
     padding: 3px;
     text-decoration: none;
-    font-size: 35px;
-    color: white;
+    font-size: 27px;
+    color: lightcyan;
     display: flex;
     align-items: center;
 }
@@ -144,16 +144,14 @@ h1 {
     margin: 0 15px;
 }
 .sidebar img.logo {
-    margin-left: 14%;
-    width: 200px;
+    margin-left: 10%;
+    width: 80%;
     margin-bottom: 2%;
 }
 .sidebar h1 {
-    font-size: 2.5em;
+    font-size: 2em;
     font-weight: 500;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-top: 2%;
+    margin: 2% 5% 5% 5%;
     padding: 5px;
     border: 1px solid white;
     border-width: 3px;
@@ -190,7 +188,7 @@ h1 {
     border-radius: 5px;
     border: 1px solid #ccc;
     margin-right: 3%;
-    width: 78%;
+    width: 72.5%;
     box-sizing: border-box;
 }
 
@@ -206,7 +204,7 @@ h1 {
   .form input[type="text"],
   .form input[type="number"],
   .form input[type="select"] {
-    width: 320px;
+    width: 165px;
     height: 15px;
     padding: 8px;
     border: 1px solid #ccc;
@@ -215,7 +213,7 @@ h1 {
     vertical-align: middle;
   }
   .form select {
-    width: 320px;
+    width: 230px;
     height: 35px;
     padding: 8px;
     border: 1px solid #ccc;
@@ -229,7 +227,7 @@ h1 {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
   .form input[type="checkbox"] {
-    margin: 0 10px;
+    margin: 0 5px;
     transform: scale(2);
     vertical-align: middle;
   }
@@ -237,7 +235,7 @@ h1 {
     display: inline-block;
     font-size: 30px;
     vertical-align: middle;
-    margin: 0 10px;
+    margin: 0 3px;
     color: white;
   }
   .form button[type="submit"] {
@@ -246,11 +244,11 @@ h1 {
     color: #fff;
     border: none;
     cursor: pointer;
-    width: 265px;
+    width: 240px;
     height: 35px;
     border-radius: 10px;
     transition: background-color 0.3s ease;
-    margin: 0 10px;
+    margin: 0 3px;
   }
   .form button[type="submit"]:hover {
     background-color: #3e8e41;
