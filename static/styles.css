@@ -8,7 +8,7 @@ h1 {
     font-size: 50px;
     margin-left: 15.5%;
     margin-top: 1%;
-    margin-bottom: 1%;
+    margin-bottom: 0.5%;
     font-weight: 300;
     text-align: center;
     color: #4DC3FA;
@@ -91,7 +91,7 @@ h1 {
     text-align: center;
     padding: 10px;
     border-radius: 5px;
-    width: 83.7%;
+    width: 82%;
     word-wrap: break-word;
 }
 #copybutton button {
@@ -102,17 +102,18 @@ h1 {
     border: none;
     border-radius: 5px;
     margin-top: 1%;
-    margin-left: 48%;
+    margin-left: 50.5%;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 20%;
+    width: 15%;
     vertical-align: middle;
 }
 #copybutton button:hover {
-    background-color: #45a049;
+    background-color: #36953b;
 }
 #forceConvertNote {
     margin-left: 65.5%;
+    margin-bottom: 0.5%;
     display: none;
     color: #a41010;
     font-size: 25px;
